@@ -1,4 +1,4 @@
-DIAGRAMS_SRC := $(wildcard diagrams/*.d2)
+DIAGRAMS_SRC := $(shell find diagrams -name '*.d2')
 DIAGRAMS_DARK  := $(patsubst diagrams/%.d2,assets/diagrams/%-dark.svg,$(DIAGRAMS_SRC))
 DIAGRAMS_LIGHT := $(patsubst diagrams/%.d2,assets/diagrams/%-light.svg,$(DIAGRAMS_SRC))
 

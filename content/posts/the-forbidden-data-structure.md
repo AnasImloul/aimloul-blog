@@ -41,9 +41,9 @@ The index structure used by virtually every relational database. Each internal n
 A B-tree augmented with one extra piece of data per internal node: **the exact count of all rows in that node's subtree**. With this, finding the 500,000th row becomes a tree traversal: at each node, compare your target rank against the left subtree's count and go left or right accordingly. This turns an O(N) scan into an O(log n) descent.
 {{< /definition >}}
 
-{{< diagram src="btree" caption="Standard B-Tree: internal nodes hold only routing keys. No row count exists anywhere in the tree." >}}
+{{< diagram src="the-forbidden-data-structure/btree" caption="Standard B-Tree: internal nodes hold only routing keys. No row count exists anywhere in the tree." >}}
 
-{{< diagram src="ost" caption="Order Statistics Tree: each internal node carries a subtree row count (orange). This enables O(log n) rank queries — and is the source of all three problems." >}}
+{{< diagram src="the-forbidden-data-structure/ost" caption="Order Statistics Tree: each internal node carries a subtree row count (orange). This enables O(log n) rank queries — and is the source of all three problems." >}}
 
 Here's a simplified illustration of why this works: if the root node says its left subtree has 400,000 rows and you want row 500,000, you immediately know to go right and look for row 100,000 in the right subtree, skipping 400,000 rows in a single step. Repeat for each level of the tree (typically 4–6 levels in a production database) and you've found your row in just a handful of steps.
 
