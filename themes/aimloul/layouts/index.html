@@ -1,13 +1,8 @@
 {{ define "main" }}
-<header class="home-header">
-  <div class="home-logo">{{ .Site.Title }}</div>
-  {{ with .Site.Params.description }}
-  <p class="home-desc">{{ . }}</p>
-  {{ end }}
-</header>
+{{ $paginator := .Paginate ((where .Site.RegularPages "Type" "posts").ByDate.Reverse) }}
 
 <div class="post-list">
-  {{ range (where .Site.RegularPages "Type" "posts").ByDate.Reverse }}
+  {{ range $paginator.Pages }}
   <a href="{{ .RelPermalink }}" class="post-card">
     {{ with .Params.category }}
     <span class="post-category">{{ . }}</span>
@@ -24,4 +19,13 @@
   </a>
   {{ end }}
 </div>
+
+<nav class="pagination-nav">
+  {{ if $paginator.HasPrev }}
+  <a href="{{ $paginator.Prev.URL }}" class="pagination-btn">← newer posts</a>
+  {{ else }}<span></span>{{ end }}
+  {{ if $paginator.HasNext }}
+  <a href="{{ $paginator.Next.URL }}" class="pagination-btn">older posts →</a>
+  {{ else }}<span></span>{{ end }}
+</nav>
 {{ end }}

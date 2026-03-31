@@ -1,0 +1,170 @@
+{{ define "main" }}
+
+{{/* Build posts data — merge category into tags for unified filtering */}}
+{{ $posts := slice }}
+{{ range (where .Site.RegularPages "Type" "posts").ByDate.Reverse }}
+  {{ $tags := .Params.tags }}
+  {{ if not $tags }}{{ $tags = slice }}{{ end }}
+  {{ with .Params.category }}{{ $tags = $tags | append . }}{{ end }}
+  {{ $readTime := .Params.readTime }}
+  {{ if not $readTime }}{{ $readTime = printf "%d min read" (div (add .WordCount 199) 200) }}{{ end }}
+  {{ $posts = $posts | append (dict
+    "title"    .Title
+    "url"      .RelPermalink
+    "date"     (.Date.Format "Jan 2006")
+    "tags"     $tags
+    "readTime" $readTime
+  ) }}
+{{ end }}
+<script>var ARCHIVE_POSTS = {{ $posts | jsonify | safeJS }};</script>
+
+<div class="archive-header">
+  <input id="archive-search" class="archive-search" type="text" placeholder="Search by title or tag…" autocomplete="off" spellcheck="false" />
+</div>
+
+<div id="archive-tag-filters" class="archive-tag-filters"></div>
+
+<p id="archive-meta" class="archive-meta"></p>
+
+<table class="archive-table" id="archive-table">
+  <thead>
+    <tr>
+      <th class="col-title">Title</th>
+      <th class="col-tags">Tags</th>
+      <th class="col-date">Date</th>
+      <th class="col-read">Read</th>
+    </tr>
+  </thead>
+  <tbody id="archive-tbody"></tbody>
+</table>
+
+<p id="archive-empty" class="archive-empty">No posts match your search.</p>
+
+<nav id="archive-pagination" class="archive-pagination"></nav>
+
+<script>
+(function () {
+  var POSTS = ARCHIVE_POSTS;
+  var PAGE_SIZE = 15;
+  var query = '';
+  var activeTags = new Set();
+  var currentPage = 1;
+
+  function getFiltered() {
+    var q = query.toLowerCase();
+    return POSTS.filter(function (p) {
+      var matchesQuery = !q ||
+        p.title.toLowerCase().includes(q) ||
+        (p.tags || []).some(function (t) { return t.toLowerCase().includes(q); });
+      var matchesTags = activeTags.size === 0 ||
+        (p.tags || []).some(function (t) { return activeTags.has(t); });
+      return matchesQuery && matchesTags;
+    });
+  }
+
+  function pageNumbers(current, total) {
+    var set = new Set([1, total]);
+    for (var i = Math.max(2, current - 2); i <= Math.min(total - 1, current + 2); i++) set.add(i);
+    var sorted = Array.from(set).sort(function (a, b) { return a - b; });
+    var result = [];
+    for (var j = 0; j < sorted.length; j++) {
+      if (j > 0 && sorted[j] - sorted[j - 1] > 1) result.push(null);
+      result.push(sorted[j]);
+    }
+    return result;
+  }
+
+  function render() {
+    var results = getFiltered();
+    var totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    var start = (currentPage - 1) * PAGE_SIZE;
+    var items = results.slice(start, start + PAGE_SIZE);
+
+    var empty = document.getElementById('archive-empty');
+    var table = document.getElementById('archive-table');
+    var meta  = document.getElementById('archive-meta');
+
+    if (results.length === 0) {
+      empty.style.display = '';
+      table.style.display = 'none';
+      meta.textContent = '';
+    } else {
+      empty.style.display = 'none';
+      table.style.display = '';
+      meta.textContent = results.length === POSTS.length
+        ? POSTS.length + ' posts'
+        : results.length + ' of ' + POSTS.length + ' posts';
+    }
+
+    var tbody = document.getElementById('archive-tbody');
+    tbody.innerHTML = items.map(function (p) {
+      var tagsHtml = (p.tags || []).map(function (t) {
+        return '<span class="archive-tag' + (activeTags.has(t) ? ' active' : '') +
+               '" data-tag="' + t + '">' + t + '</span>';
+      }).join('');
+      return '<tr class="archive-row" data-url="' + p.url + '">' +
+        '<td class="col-title">' + p.title + '</td>' +
+        '<td class="col-tags">' + tagsHtml + '</td>' +
+        '<td class="col-date">' + p.date + '</td>' +
+        '<td class="col-read">' + p.readTime + '</td>' +
+        '</tr>';
+    }).join('');
+
+    tbody.querySelectorAll('.archive-row').forEach(function (row) {
+      row.addEventListener('click', function () { location.href = row.dataset.url; });
+    });
+    tbody.querySelectorAll('.archive-tag').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleTag(el.dataset.tag);
+      });
+    });
+
+    var nav = document.getElementById('archive-pagination');
+    if (totalPages <= 1) { nav.innerHTML = ''; return; }
+    nav.innerHTML = pageNumbers(currentPage, totalPages).map(function (p) {
+      if (p === null) return '<span class="pg-ellipsis">…</span>';
+      return '<button class="pg-btn' + (p === currentPage ? ' active' : '') +
+             '" data-page="' + p + '">' + p + '</button>';
+    }).join('');
+    nav.querySelectorAll('.pg-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        currentPage = +btn.dataset.page;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  }
+
+  function toggleTag(tag) {
+    if (activeTags.has(tag)) activeTags.delete(tag);
+    else activeTags.add(tag);
+    currentPage = 1;
+    document.querySelectorAll('.archive-tag-chip').forEach(function (el) {
+      el.classList.toggle('active', activeTags.has(el.dataset.tag));
+    });
+    render();
+  }
+
+  var allTags = Array.from(new Set(POSTS.flatMap(function (p) { return p.tags || []; }))).sort();
+  var filtersEl = document.getElementById('archive-tag-filters');
+  if (allTags.length > 0) {
+    filtersEl.innerHTML = allTags.map(function (t) {
+      return '<button class="archive-tag-chip" data-tag="' + t + '">' + t + '</button>';
+    }).join('');
+    filtersEl.querySelectorAll('.archive-tag-chip').forEach(function (el) {
+      el.addEventListener('click', function () { toggleTag(el.dataset.tag); });
+    });
+  }
+
+  document.getElementById('archive-search').addEventListener('input', function (e) {
+    query = e.target.value;
+    currentPage = 1;
+    render();
+  });
+
+  render();
+})();
+</script>
+{{ end }}

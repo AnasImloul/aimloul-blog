@@ -2,6 +2,8 @@ baseURL = 'https://aimloul.com/'
 languageCode = 'en-us'
 title = 'aimloul'
 theme = 'aimloul'
+[pagination]
+  pagerSize = 5
 
 [params]
   author = 'Imloul Anas'
