@@ -1,0 +1,185 @@
+vars: {
+d2-config: {
+layout-engine: elk
+}
+}
+
+direction: down
+
+# Root node
+root: {
+  label: "Root\n| 300 | 700 |"
+  shape: rectangle
+  style: {
+  fill: "#1e293b"
+  stroke: "#3b82f6"
+  stroke-width: 2
+  font-color: "#f1f5f9"
+  bold: true
+  border-radius: 4
+  }
+}
+
+# Internal nodes (level 2)
+int1: {
+  label: "Internal\n| 100 | 200 |"
+  shape: rectangle
+  style: {
+  fill: "#1e293b"
+  stroke: "#3b82f6"
+  stroke-width: 2
+  font-color: "#f1f5f9"
+  border-radius: 4
+  }
+}
+
+int2: {
+  label: "Internal\n| 400 | 600 |"
+  shape: rectangle
+  style: {
+  fill: "#1e293b"
+  stroke: "#3b82f6"
+  stroke-width: 2
+  font-color: "#f1f5f9"
+  border-radius: 4
+  }
+}
+
+int3: {
+  label: "Internal\n| 800 | 900 |"
+  shape: rectangle
+  style: {
+  fill: "#1e293b"
+  stroke: "#3b82f6"
+  stroke-width: 2
+  font-color: "#f1f5f9"
+  border-radius: 4
+  }
+}
+
+# Leaf nodes
+leaf1: {
+  label: "Leaf\n| 50 | 80 |"
+  shape: rectangle
+  style: {
+  fill: "#0f172a"
+  stroke: "#64748b"
+  stroke-width: 1
+  font-color: "#94a3b8"
+  border-radius: 4
+  }
+}
+
+leaf2: {
+  label: "Leaf\n| 110 | 160 |"
+  shape: rectangle
+  style: {
+  fill: "#0f172a"
+  stroke: "#64748b"
+  stroke-width: 1
+  font-color: "#94a3b8"
+  border-radius: 4
+  }
+}
+
+leaf3: {
+  label: "Leaf\n| 210 | 260 |"
+  shape: rectangle
+  style: {
+  fill: "#0f172a"
+  stroke: "#64748b"
+  stroke-width: 1
+  font-color: "#94a3b8"
+  border-radius: 4
+  }
+}
+
+leaf4: {
+  label: "Leaf\n| 310 | 380 |"
+  shape: rectangle
+  style: {
+  fill: "#0f172a"
+  stroke: "#64748b"
+  stroke-width: 1
+  font-color: "#94a3b8"
+  border-radius: 4
+  }
+}
+
+leaf5: {
+  label: "Leaf\n| 410 | 560 |"
+  shape: rectangle
+  style: {
+  fill: "#0f172a"
+  stroke: "#64748b"
+  stroke-width: 1
+  font-color: "#94a3b8"
+  border-radius: 4
+  }
+}
+
+leaf6: {
+  label: "Leaf\n| 610 | 680 |"
+  shape: rectangle
+  style: {
+  fill: "#0f172a"
+  stroke: "#64748b"
+  stroke-width: 1
+  font-color: "#94a3b8"
+  border-radius: 4
+  }
+}
+
+leaf7: {
+  label: "Leaf\n| 710 | 780 |"
+  shape: rectangle
+  style: {
+  fill: "#0f172a"
+  stroke: "#64748b"
+  stroke-width: 1
+  font-color: "#94a3b8"
+  border-radius: 4
+  }
+}
+
+leaf8: {
+  label: "Leaf\n| 810 | 880 |"
+  shape: rectangle
+  style: {
+  fill: "#0f172a"
+  stroke: "#64748b"
+  stroke-width: 1
+  font-color: "#94a3b8"
+  border-radius: 4
+  }
+}
+
+leaf9: {
+  label: "Leaf\n| 910 | 980 |"
+  shape: rectangle
+  style: {
+  fill: "#0f172a"
+  stroke: "#64748b"
+  stroke-width: 1
+  font-color: "#94a3b8"
+  border-radius: 4
+  }
+}
+
+# Edges root -> internal
+root -> int1: {style: { stroke: "#3b82f6"; stroke-width: 1 }}
+root -> int2: {style: { stroke: "#3b82f6"; stroke-width: 1 }}
+root -> int3: {style: { stroke: "#3b82f6"; stroke-width: 1 }}
+
+# Edges internal -> leaves
+int1 -> leaf1: {style: { stroke: "#475569"; stroke-width: 1 }}
+int1 -> leaf2: {style: { stroke: "#475569"; stroke-width: 1 }}
+int1 -> leaf3: {style: { stroke: "#475569"; stroke-width: 1 }}
+
+int2 -> leaf4: {style: { stroke: "#475569"; stroke-width: 1 }}
+int2 -> leaf5: {style: { stroke: "#475569"; stroke-width: 1 }}
+int2 -> leaf6: {style: { stroke: "#475569"; stroke-width: 1 }}
+
+int3 -> leaf7: {style: { stroke: "#475569"; stroke-width: 1 }}
+int3 -> leaf8: {style: { stroke: "#475569"; stroke-width: 1 }}
+int3 -> leaf9: {style: { stroke: "#475569"; stroke-width: 1 }}

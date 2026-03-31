@@ -1,0 +1,215 @@
+vars: {
+d2-config: {
+layout-engine: elk
+}
+}
+
+direction: down
+
+root: {
+  label: "Root\n| 300 | 700 |"
+  shape: rectangle
+  style: {
+  fill: "#1e293b"
+  stroke: "#3b82f6"
+  stroke-width: 2
+  font-color: "#f1f5f9"
+  bold: true
+  border-radius: 4
+  }
+}
+
+int1: {
+  label: "Internal\n| 100 | 200 |\n(keys only)"
+  shape: rectangle
+  style: {
+  fill: "#1e293b"
+  stroke: "#3b82f6"
+  stroke-width: 2
+  font-color: "#f1f5f9"
+  border-radius: 4
+  }
+}
+
+int2: {
+  label: "Internal\n| 400 | 600 |\n(keys only)"
+  shape: rectangle
+  style: {
+  fill: "#1e293b"
+  stroke: "#3b82f6"
+  stroke-width: 2
+  font-color: "#f1f5f9"
+  border-radius: 4
+  }
+}
+
+int3: {
+  label: "Internal\n| 800 | 900 |\n(keys only)"
+  shape: rectangle
+  style: {
+  fill: "#1e293b"
+  stroke: "#3b82f6"
+  stroke-width: 2
+  font-color: "#f1f5f9"
+  border-radius: 4
+  }
+}
+
+leaf1: {
+  label: "Leaf\n| 50 → row |\n| 80 → row |"
+  shape: rectangle
+  style: {
+  fill: "#0c1a3a"
+  stroke: "#22d3ee"
+  stroke-width: 2
+  font-color: "#a5f3fc"
+  border-radius: 4
+  }
+}
+
+leaf2: {
+  label: "Leaf\n| 110 → row |\n| 160 → row |"
+  shape: rectangle
+  style: {
+  fill: "#0c1a3a"
+  stroke: "#22d3ee"
+  stroke-width: 2
+  font-color: "#a5f3fc"
+  border-radius: 4
+  }
+}
+
+leaf3: {
+  label: "Leaf\n| 210 → row |\n| 260 → row |"
+  shape: rectangle
+  style: {
+  fill: "#0c1a3a"
+  stroke: "#22d3ee"
+  stroke-width: 2
+  font-color: "#a5f3fc"
+  border-radius: 4
+  }
+}
+
+leaf4: {
+  label: "Leaf\n| 310 → row |\n| 380 → row |"
+  shape: rectangle
+  style: {
+  fill: "#0c1a3a"
+  stroke: "#22d3ee"
+  stroke-width: 2
+  font-color: "#a5f3fc"
+  border-radius: 4
+  }
+}
+
+leaf5: {
+  label: "Leaf\n| 410 → row |\n| 560 → row |"
+  shape: rectangle
+  style: {
+  fill: "#0c1a3a"
+  stroke: "#22d3ee"
+  stroke-width: 2
+  font-color: "#a5f3fc"
+  border-radius: 4
+  }
+}
+
+leaf6: {
+  label: "Leaf\n| 610 → row |\n| 680 → row |"
+  shape: rectangle
+  style: {
+  fill: "#0c1a3a"
+  stroke: "#22d3ee"
+  stroke-width: 2
+  font-color: "#a5f3fc"
+  border-radius: 4
+  }
+}
+
+leaf7: {
+  label: "Leaf\n| 710 → row |\n| 780 → row |"
+  shape: rectangle
+  style: {
+  fill: "#0c1a3a"
+  stroke: "#22d3ee"
+  stroke-width: 2
+  font-color: "#a5f3fc"
+  border-radius: 4
+  }
+}
+
+leaf8: {
+  label: "Leaf\n| 810 → row |\n| 880 → row |"
+  shape: rectangle
+  style: {
+  fill: "#0c1a3a"
+  stroke: "#22d3ee"
+  stroke-width: 2
+  font-color: "#a5f3fc"
+  border-radius: 4
+  }
+}
+
+leaf9: {
+  label: "Leaf\n| 910 → row |\n| 980 → row |"
+  shape: rectangle
+  style: {
+  fill: "#0c1a3a"
+  stroke: "#22d3ee"
+  stroke-width: 2
+  font-color: "#a5f3fc"
+  border-radius: 4
+  }
+}
+
+# Invisible spine node that lives at leaf level
+# Forces ELK to treat the leaf row as a flat horizontal rank
+spine: {
+  label: "← sequential scan →"
+  shape: rectangle
+  style: {
+  fill: "transparent"
+  stroke: "#22d3ee"
+  stroke-width: 1
+  stroke-dash: 4
+  font-color: "#22d3ee"
+  font-size: 12
+  italic: true
+  border-radius: 4
+  }
+}
+
+# Tree edges — parent to children
+root -> int1: {style: {stroke: "#3b82f6"; stroke-width: 1}}
+root -> int2: {style: {stroke: "#3b82f6"; stroke-width: 1}}
+root -> int3: {style: {stroke: "#3b82f6"; stroke-width: 1}}
+
+int1 -> leaf1: {style: {stroke: "#475569"; stroke-width: 1}}
+int1 -> leaf2: {style: {stroke: "#475569"; stroke-width: 1}}
+int1 -> leaf3: {style: {stroke: "#475569"; stroke-width: 1}}
+
+int2 -> leaf4: {style: {stroke: "#475569"; stroke-width: 1}}
+int2 -> leaf5: {style: {stroke: "#475569"; stroke-width: 1}}
+int2 -> leaf6: {style: {stroke: "#475569"; stroke-width: 1}}
+
+int3 -> leaf7: {style: {stroke: "#475569"; stroke-width: 1}}
+int3 -> leaf8: {style: {stroke: "#475569"; stroke-width: 1}}
+int3 -> leaf9: {style: {stroke: "#475569"; stroke-width: 1}}
+
+# Spine anchors — connect spine to first and last leaf
+# This pulls the spine into the same horizontal rank as the leaves
+# without creating a cross-leaf chain that confuses ELK
+leaf1 -> spine: {
+  style: {
+  stroke: "transparent"
+  stroke-width: 0
+  }
+}
+
+leaf9 -> spine: {
+  style: {
+  stroke: "transparent"
+  stroke-width: 0
+  }
+}

@@ -20,4 +20,21 @@
   </header>
   {{ .Content }}
 </article>
+
+{{/* Resolve the read-next post: explicit frontmatter first, then next in section */}}
+{{ $next := .NextInSection }}
+{{ with .Params.next }}
+  {{ $p := $.Site.GetPage (printf "/posts/%s" .) }}
+  {{ if $p }}{{ $next = $p }}{{ end }}
+{{ end }}
+{{ with $next }}
+<section class="read-next">
+  <p class="read-next-label">Read next</p>
+  <a href="{{ .RelPermalink }}" class="read-next-card">
+    {{ with .Params.category }}<span class="read-next-category">{{ . }}</span>{{ end }}
+    <span class="read-next-title">{{ .Title | safeHTML }}</span>
+    <span class="read-next-arrow">→</span>
+  </a>
+</section>
+{{ end }}
 {{ end }}

@@ -57,27 +57,22 @@ body::before {
 
 /* ── THEME TOGGLE ── */
 .theme-toggle {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  padding: 6px 14px;
-  border-radius: 4px;
+  background: transparent;
+  border: none;
+  padding: 0;
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
-  z-index: 10000;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+  line-height: 0;
 }
-.theme-toggle:hover {
-  color: var(--accent);
-  border-color: var(--accent);
-}
+.theme-toggle:hover { color: var(--text); }
+
+[data-theme="dark"]  .toggle-sun  { display: block; }
+[data-theme="dark"]  .toggle-moon { display: none;  }
+[data-theme="light"] .toggle-sun  { display: none;  }
+[data-theme="light"] .toggle-moon { display: block; }
 
 /* ── LAYOUT ── */
 .container {
@@ -658,6 +653,67 @@ article hr {
 [data-theme="light"] .tag.bad { background: rgba(192, 48, 48, 0.10); }
 [data-theme="light"] .tag.good { background: rgba(45, 138, 94, 0.12); }
 
+/* ── READ NEXT ── */
+.read-next {
+  border-top: 1px solid var(--border);
+  padding: 48px 0 80px;
+}
+
+.read-next-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+.read-next-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.read-next-card:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.read-next-category {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.read-next-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.3;
+  flex: 1;
+}
+
+.read-next-arrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 1rem;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  transition: color 0.15s ease, transform 0.15s ease;
+  display: inline-block;
+}
+.read-next-card:hover .read-next-arrow {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
 /* ── ARCHIVE PAGE ── */
 .archive-header {
   display: flex;
@@ -806,13 +862,56 @@ article hr {
   padding: 5px 4px;
 }
 
-/* ── RESPONSIVE ── */
+/* ── RESPONSIVE: TABLET (≤ 860px) ── */
+@media (max-width: 860px) {
+  .container { padding: 0 24px; }
+
+  /* Archive: tags column too wide on tablet */
+  .col-tags,
+  .archive-table thead th:nth-child(2) { display: none; }
+}
+
+/* ── RESPONSIVE: MOBILE (≤ 600px) ── */
 @media (max-width: 600px) {
-  .container { padding: 0 18px; }
-  header { padding: 48px 0 40px; }
-  h1 { font-size: 2rem; }
-  .conclusion { padding: 24px; }
-  header.home-header { flex-direction: column; gap: 6px; }
-  .home-desc { text-align: left; }
-  .theme-toggle { top: 16px; right: 16px; }
+  body { font-size: 16px; }
+  .container { padding: 0 16px; }
+
+  /* Site header */
+  .site-header { padding: 18px 0; }
+  .site-desc { font-size: 10px; }
+
+  /* Article header */
+  article > header { padding: 36px 0 30px; margin-bottom: 36px; }
+
+  /* Typography */
+  h1 { font-size: clamp(1.75rem, 7vw, 2.2rem); }
+  .subtitle { font-size: 0.9rem; }
+  .post-title { font-size: 1.3rem; }
+
+  /* Article */
+  article { padding-bottom: 48px; }
+
+  /* Code blocks */
+  .code-block { font-size: 12px; }
+  .code-block .highlight pre { font-size: 12px !important; padding: 12px 14px !important; }
+  .code-block .highlight code { font-size: 12px; }
+
+  /* Scrollable comparison table */
+  .compare-table { display: block; overflow-x: auto; }
+
+  /* Conclusion */
+  .conclusion { padding: 24px 20px; margin-top: 40px; }
+
+  /* Read next card: stack on small screens */
+  .read-next-card { flex-wrap: wrap; gap: 10px; padding: 18px 20px; }
+  .read-next-title { width: 100%; }
+  .read-next-arrow { margin-left: auto; }
+
+  /* Archive: also hide Read column, make search full-width */
+  .col-read,
+  .archive-table thead th:nth-child(4) { display: none; }
+  .archive-search { width: 100%; }
+
+  /* Pagination */
+  .pagination-nav { padding: 20px 0 60px; }
 }

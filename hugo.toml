@@ -18,3 +18,8 @@ theme = 'aimloul'
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
+    [markup.goldmark.extensions.passthrough]
+      enable = true
+      [markup.goldmark.extensions.passthrough.delimiters]
+        block  = [["$$", "$$"]]
+        inline = [["$", "$"]]
