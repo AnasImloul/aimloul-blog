@@ -1077,6 +1077,12 @@ article hr {
   .read-next-title { width: 100%; }
   .read-next-arrow { margin-left: auto; }
 
+  /* TOC float: hug the bottom edge, respect iPhone home indicator */
+  .toc-float {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    right: 20px;
+  }
+
   /* Archive: also hide Read column, make search full-width */
   .col-read,
   .archive-table thead th:nth-child(4) { display: none; }
