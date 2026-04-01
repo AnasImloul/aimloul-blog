@@ -37,7 +37,7 @@ There is a second, equally important constraint: storage hardware doesn't let yo
 
 This constraint, at first glance a limitation, is actually the key insight that makes the B-tree work.
 
-{{< callout title="The single most important principle in storage engine design" type="info" >}}
+{{< callout title="The single most important principle in storage engine design" >}}
 Reading 8 bytes costs exactly the same as reading 8,192 bytes, because the hardware will fetch the entire page regardless. Therefore, the goal is not to minimize *bytes* read. It is to minimize *page reads*. Every data structure in database storage is evaluated on one criterion: how few pages does it touch to answer a query?
 {{< /callout >}}
 
@@ -59,9 +59,7 @@ With fan-out defined, the failures of the alternatives become precise rather tha
 The classic recursive structure taught in every algorithms course. Each node holds one key and two child pointers. Searching is O(log₂ n), which sounds efficient until you confront disk I/O.
 {{< /definition >}}
 
-On paper, a BST on 1 billion rows would require roughly 30 comparisons. O(log₂ 1,000,000,000) ≈ 30. In RAM, 30 comparisons is trivial. On disk, it is a catastrophe.
-
-In a naïvely stored BST, each node is likely to occupy a different page. Finding any single row could therefore require **30 separate page reads**. On an HDD at 10 ms per seek, that is **300 milliseconds per lookup**, for a structure that provides no ordering guarantee on disk. No database engineer would accept this.
+In a naively stored BST, each node is likely to occupy a different page. Finding any single row on 1 billion rows could therefore require **30 separate page reads**. On an HDD at 10 ms per seek, that is **300 milliseconds per lookup**. No database engineer would accept this.
 
 The root problem is fan-out: a BST has a fan-out of exactly 2. This forces the tree tall and thin, maximizing the number of page reads required per traversal. The B-tree's entire design is a direct assault on this number.
 
@@ -174,7 +172,7 @@ In a pure B-tree, internal nodes can hold data pointers alongside routing keys. 
 
 This separation produces two meaningful benefits. First, internal nodes become denser: without data pointers consuming space, each node fits more routing keys, which increases fan-out and further reduces tree height. Second, and more importantly, **range queries become simple sequential scans**.
 
-{{< callout title="Why linked leaves change everything for range queries" type="info" >}}
+{{< callout title="Why linked leaves change everything for range queries" >}}
 Consider a query for all transactions between January 1 and January 31. With a pure B-tree, you'd descend to the first matching leaf, retrieve its data, then need to re-traverse the tree from the root to find the next matching node. With a B+ tree, you descend once, find the starting leaf, then follow the linked list forward through all matching leaves. One descent, then pure sequential I/O. This is why B+ trees dominate OLTP storage engines.
 {{< /callout >}}
 
@@ -182,29 +180,11 @@ Consider a query for all transactions between January 1 and January 31. With a p
 
 ---
 
-{{< section-label >}}Concurrency{{< /section-label >}}
-
-## The B-link Tree: Surviving Concurrent Writes
-
-A B-tree that can only be accessed by one thread at a time is of limited value in a production database handling thousands of concurrent requests. The question of how to let multiple writers work inside the same tree simultaneously, without corrupting it, is one of the hardest problems in storage engine design.
-
-The naive approach is to hold a write lock on every node you touch during an insert or split. This is safe but disastrous for throughput: a deep split that propagates toward the root locks the entire tree.
-
-The solution used by most modern engines is the **B-link tree**, a variant introduced by Lehman and Yao in 1981. The key addition is a **sibling pointer**: every node holds a pointer to its right neighbor at the same level, alongside its usual child pointers.
-
-{{< callout title="Why a single extra pointer changes everything for concurrency" type="info" >}}
-When a page split occurs, the new sibling page is written and linked before the parent is updated. Any thread that was mid-traversal and finds itself on the "wrong" node after a split can follow the sibling pointer horizontally to find the correct one, without holding a lock and without restarting from the root. This localizes locking to individual leaf nodes, not entire tree paths. On a 64-core server, this is the difference between near-linear write scaling and a serialized bottleneck.
-{{< /callout >}}
-
-This is also precisely why **Order Statistics Trees** (B-trees augmented with subtree row counts) are incompatible with high-concurrency environments: their count update cascade forces a lock all the way to the root on every insert, destroying the localized-locking property the B-link tree was designed to provide.
-
----
-
 {{< section-label >}}Clustered vs. Secondary{{< /section-label >}}
 
 ## Two Flavors of Index: Where the Row Actually Lives
 
-Now that we understand the tree's shape, and how it stays consistent under concurrent writes, it's worth asking what exactly lives in its leaf nodes. That choice has significant consequences for query performance.
+Now that we understand the tree's shape, it's worth asking what exactly lives in its leaf nodes. That choice has significant consequences for query performance.
 
 Not all B-tree indexes are equal. The distinction between **clustered** and **secondary** indexes is one of the most consequential architectural differences in relational databases, and it is still confused by many developers.
 
@@ -278,17 +258,9 @@ This is not a failure of the B-tree. It is a boundary condition. B-trees were de
 
 A reasonable question: if NVMe SSDs are fast enough to make random I/O nearly cheap, does the B-tree's page-minimization advantage shrink to irrelevance?
 
-The answer is no, for two reasons.
+The answer is no, and the most important reason is the **buffer pool**: the database's page cache in RAM. PostgreSQL calls this `shared_buffers`; InnoDB calls it the buffer pool. Because the B-tree's structure guarantees that upper-level pages are accessed on *every* query, those pages are almost never read from disk at all. They simply live in RAM permanently once warmed up. Leaf pages, accessed less often, are evicted and loaded as needed.
 
-First, even on NVMe, the absolute numbers still favor minimizing page reads. An NVMe random read takes roughly 70-100 us. A 4-level B-tree descent requires 4 page reads: approximately 300-400 us total. A BST on the same data would require 30 page reads: 2,100-3,000 us. The ratio stays the same; only the absolute values shrink. At high query concurrency, those differences compound into throughput limits that matter enormously.
-
-Second, and more importantly: databases serving real workloads are not cold-storage engines. The pages near the root of a heavily-queried B-tree are read millions of times per day and live permanently in the **buffer pool**, the database's page cache in RAM. PostgreSQL calls this `shared_buffers`; InnoDB calls it the buffer pool. Because the B-tree's structure guarantees that upper-level pages are accessed on *every* query, those pages are almost never read from disk at all. They simply live in RAM permanently once warmed up.
-
-Leaf pages, accessed less often and distributed across the key space, are evicted and loaded as needed. This tiered access pattern (hot upper nodes in RAM, cold leaves loaded on demand) is not accidental. It is a direct consequence of the B-tree's logarithmic structure, and it is one reason the B-tree's performance model is predictable in a way that flatter structures with less access locality cannot match.
-
-{{< callout title="The buffer pool and hot pages" type="info" >}}
-The buffer pool is designed around the B-tree's access pattern. Root and near-root pages are accessed so frequently that they effectively live in RAM permanently. A well-sized buffer pool on a busy OLTP system will have the top two or three levels of every major index perpetually cached, meaning most queries pay for only one or two actual disk reads: the final descent into the leaf. This is why database servers are often given as much RAM as possible: more RAM means more leaf pages cached, and fewer leaf reads hitting disk.
-{{< /callout >}}
+This tiered access pattern is not accidental. It is a direct consequence of the B-tree's logarithmic structure, and it is one reason the B-tree's performance model remains predictable even as underlying storage gets faster. A well-sized buffer pool on a busy OLTP system will have the top two or three levels of every major index perpetually cached, meaning most queries pay for only one or two actual disk reads: the final descent into the leaf. This is why database servers are often given as much RAM as possible.
 
 ---
 

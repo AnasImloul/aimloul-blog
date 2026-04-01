@@ -1,215 +1,83 @@
 vars: {
-d2-config: {
-layout-engine: elk
-}
+  d2-config: {
+    layout-engine: elk
+  }
 }
 
 direction: down
 
-root: {
-  label: "Root\n| 300 | 700 |"
-  shape: rectangle
-  style: {
-  fill: "#1e293b"
-  stroke: "#3b82f6"
-  stroke-width: 2
-  font-color: "#f1f5f9"
-  bold: true
-  border-radius: 4
-  }
-}
+root: "Root\n| 300 | 700 |"
 
-int1: {
-  label: "Internal\n| 100 | 200 |\n(keys only)"
-  shape: rectangle
-  style: {
-  fill: "#1e293b"
-  stroke: "#3b82f6"
-  stroke-width: 2
-  font-color: "#f1f5f9"
-  border-radius: 4
-  }
-}
+int1: "Internal\n| 100 | 200 |\n"
+int2: "Internal\n| 400 | 600 |\n"
+int3: "Internal\n| 800 | 900 |\n"
 
-int2: {
-  label: "Internal\n| 400 | 600 |\n(keys only)"
-  shape: rectangle
-  style: {
-  fill: "#1e293b"
-  stroke: "#3b82f6"
-  stroke-width: 2
-  font-color: "#f1f5f9"
-  border-radius: 4
-  }
-}
+leaf1: "Leaf\n| 50 | 80 |"
+leaf2: "Leaf\n| 110 | 160 |"
+leaf3: "Leaf\n| 210 | 260 |"
+leaf4: "Leaf\n| 310 | 380 |"
+leaf5: "Leaf\n| 410 | 560 |"
+leaf6: "Leaf\n| 610 | 680 |"
+leaf7: "Leaf\n| 710 | 780 |"
+leaf8: "Leaf\n| 810 | 880 |"
+leaf9: "Leaf\n| 910 | 980 |"
 
-int3: {
-  label: "Internal\n| 800 | 900 |\n(keys only)"
-  shape: rectangle
-  style: {
-  fill: "#1e293b"
-  stroke: "#3b82f6"
-  stroke-width: 2
-  font-color: "#f1f5f9"
-  border-radius: 4
-  }
-}
+row1: "rows"
+row2: "rows"
+row3: "rows"
+row4: "rows"
+row5: "rows"
+row6: "rows"
+row7: "rows"
+row8: "rows"
+row9: "rows"
 
-leaf1: {
-  label: "Leaf\n| 50 → row |\n| 80 → row |"
-  shape: rectangle
-  style: {
-  fill: "#0c1a3a"
-  stroke: "#22d3ee"
-  stroke-width: 2
-  font-color: "#a5f3fc"
-  border-radius: 4
-  }
-}
-
-leaf2: {
-  label: "Leaf\n| 110 → row |\n| 160 → row |"
-  shape: rectangle
-  style: {
-  fill: "#0c1a3a"
-  stroke: "#22d3ee"
-  stroke-width: 2
-  font-color: "#a5f3fc"
-  border-radius: 4
-  }
-}
-
-leaf3: {
-  label: "Leaf\n| 210 → row |\n| 260 → row |"
-  shape: rectangle
-  style: {
-  fill: "#0c1a3a"
-  stroke: "#22d3ee"
-  stroke-width: 2
-  font-color: "#a5f3fc"
-  border-radius: 4
-  }
-}
-
-leaf4: {
-  label: "Leaf\n| 310 → row |\n| 380 → row |"
-  shape: rectangle
-  style: {
-  fill: "#0c1a3a"
-  stroke: "#22d3ee"
-  stroke-width: 2
-  font-color: "#a5f3fc"
-  border-radius: 4
-  }
-}
-
-leaf5: {
-  label: "Leaf\n| 410 → row |\n| 560 → row |"
-  shape: rectangle
-  style: {
-  fill: "#0c1a3a"
-  stroke: "#22d3ee"
-  stroke-width: 2
-  font-color: "#a5f3fc"
-  border-radius: 4
-  }
-}
-
-leaf6: {
-  label: "Leaf\n| 610 → row |\n| 680 → row |"
-  shape: rectangle
-  style: {
-  fill: "#0c1a3a"
-  stroke: "#22d3ee"
-  stroke-width: 2
-  font-color: "#a5f3fc"
-  border-radius: 4
-  }
-}
-
-leaf7: {
-  label: "Leaf\n| 710 → row |\n| 780 → row |"
-  shape: rectangle
-  style: {
-  fill: "#0c1a3a"
-  stroke: "#22d3ee"
-  stroke-width: 2
-  font-color: "#a5f3fc"
-  border-radius: 4
-  }
-}
-
-leaf8: {
-  label: "Leaf\n| 810 → row |\n| 880 → row |"
-  shape: rectangle
-  style: {
-  fill: "#0c1a3a"
-  stroke: "#22d3ee"
-  stroke-width: 2
-  font-color: "#a5f3fc"
-  border-radius: 4
-  }
-}
-
-leaf9: {
-  label: "Leaf\n| 910 → row |\n| 980 → row |"
-  shape: rectangle
-  style: {
-  fill: "#0c1a3a"
-  stroke: "#22d3ee"
-  stroke-width: 2
-  font-color: "#a5f3fc"
-  border-radius: 4
-  }
-}
-
-# Invisible spine node that lives at leaf level
-# Forces ELK to treat the leaf row as a flat horizontal rank
 spine: {
   label: "← sequential scan →"
   shape: rectangle
   style: {
-  fill: "transparent"
-  stroke: "#22d3ee"
-  stroke-width: 1
-  stroke-dash: 4
-  font-color: "#22d3ee"
-  font-size: 12
-  italic: true
-  border-radius: 4
+    stroke-dash: 4
+    font-size: 12
+    italic: true
   }
 }
 
-# Tree edges — parent to children
-root -> int1: {style: {stroke: "#3b82f6"; stroke-width: 1}}
-root -> int2: {style: {stroke: "#3b82f6"; stroke-width: 1}}
-root -> int3: {style: {stroke: "#3b82f6"; stroke-width: 1}}
+root -> int1
+root -> int2
+root -> int3
 
-int1 -> leaf1: {style: {stroke: "#475569"; stroke-width: 1}}
-int1 -> leaf2: {style: {stroke: "#475569"; stroke-width: 1}}
-int1 -> leaf3: {style: {stroke: "#475569"; stroke-width: 1}}
+int1 -> leaf1
+int1 -> leaf2
+int1 -> leaf3
 
-int2 -> leaf4: {style: {stroke: "#475569"; stroke-width: 1}}
-int2 -> leaf5: {style: {stroke: "#475569"; stroke-width: 1}}
-int2 -> leaf6: {style: {stroke: "#475569"; stroke-width: 1}}
+int2 -> leaf4
+int2 -> leaf5
+int2 -> leaf6
 
-int3 -> leaf7: {style: {stroke: "#475569"; stroke-width: 1}}
-int3 -> leaf8: {style: {stroke: "#475569"; stroke-width: 1}}
-int3 -> leaf9: {style: {stroke: "#475569"; stroke-width: 1}}
+int3 -> leaf7
+int3 -> leaf8
+int3 -> leaf9
 
-# Spine anchors — connect spine to first and last leaf
-# This pulls the spine into the same horizontal rank as the leaves
-# without creating a cross-leaf chain that confuses ELK
-leaf1 -> spine: {
+leaf1 -> row1
+leaf2 -> row2
+leaf3 -> row3
+leaf4 -> row4
+leaf5 -> row5
+leaf6 -> row6
+leaf7 -> row7
+leaf8 -> row8
+leaf9 -> row9
+
+row1 -> spine: {
   style: {
-  stroke: "transparent"
-  stroke-width: 0
+    stroke: "transparent"
+    stroke-width: 0
   }
 }
 
-leaf9 -> spine: {
+row9 -> spine: {
   style: {
-  stroke: "transparent"
-  stroke-width: 0
+    stroke: "transparent"
+    stroke-width: 0
   }
 }
