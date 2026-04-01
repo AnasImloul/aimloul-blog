@@ -4,7 +4,41 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title | plainify }} — {{ .Site.Title }}{{ end }}</title>
-  {{ with .Params.subtitle }}<meta name="description" content="{{ . }}" />{{ else }}{{ with .Site.Params.description }}<meta name="description" content="{{ . }}" />{{ end }}{{ end }}
+  {{ $desc := "" }}{{ with .Params.subtitle }}{{ $desc = . }}{{ else }}{{ with .Site.Params.description }}{{ $desc = . }}{{ end }}{{ end }}
+  <meta name="description" content="{{ $desc }}" />
+  <link rel="canonical" href="{{ .Permalink }}" />
+  <meta name="author" content="{{ .Params.author | default .Site.Params.author }}" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
+  <meta property="og:url" content="{{ .Permalink }}" />
+  <meta property="og:site_name" content="{{ .Site.Title }}" />
+  <meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title | plainify }} — {{ .Site.Title }}{{ end }}" />
+  <meta property="og:description" content="{{ $desc }}" />
+  {{ if .IsPage }}
+  <meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" />
+  <meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}" />
+  <meta property="article:author" content="{{ .Params.author | default .Site.Params.author }}" />
+  {{ range .Params.tags }}<meta property="article:tag" content="{{ . }}" />
+  {{ end }}{{ end }}
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title | plainify }} — {{ .Site.Title }}{{ end }}" />
+  <meta name="twitter:description" content="{{ $desc }}" />
+  {{ if .IsPage }}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": {{ .Title | jsonify }},
+    "description": {{ $desc | jsonify }},
+    "datePublished": "{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}",
+    "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}",
+    "author": { "@type": "Person", "name": {{ (.Params.author | default .Site.Params.author) | jsonify }} },
+    "url": "{{ .Permalink }}",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ .Permalink }}" }
+  }
+  </script>
+  {{ end }}
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=Bricolage+Grotesque:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -39,6 +73,7 @@
         <nav class="site-nav-right">
           <a href="{{ "/" | relURL }}" class="nav-link{{ if or .IsHome .IsSection }} nav-active{{ end }}">home</a>
           <a href="{{ "/archive/" | relURL }}" class="nav-link{{ if eq .RelPermalink "/archive/" }} nav-active{{ end }}">archive</a>
+          <a href="{{ "/about/" | relURL }}" class="nav-link{{ if eq .RelPermalink "/about/" }} nav-active{{ end }}">about</a>
           <button id="theme-toggle" class="theme-toggle" aria-label="Toggle colour theme">
             <svg class="toggle-sun" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="8" cy="8" r="2.8" stroke="currentColor" stroke-width="1.4"/>

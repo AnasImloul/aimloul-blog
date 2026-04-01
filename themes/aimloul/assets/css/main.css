@@ -1069,6 +1069,39 @@ article hr {
 .toc-float-panel nav a:hover { color: var(--accent); }
 .toc-float-panel nav ul ul { display: none; }
 
+/* ── ABOUT PAGE ── */
+.about-page > header {
+  padding: 80px 0 48px;
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.about-page > header h1 {
+  margin-bottom: 0;
+}
+
+.about-links {
+  display: flex;
+  gap: 16px;
+  margin-top: 48px;
+}
+
+.about-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.about-link:hover {
+  color: var(--text);
+}
+
 /* ── RESPONSIVE: TABLET (≤ 860px) ── */
 @media (max-width: 860px) {
   .container { padding: 0 24px; }
