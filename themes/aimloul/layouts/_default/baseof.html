@@ -163,8 +163,10 @@
   </script>
   <script>
     (function () {
+      var toggle = document.getElementById('giscus-toggle');
       var container = document.getElementById('giscus-container');
-      if (!container) return;
+      if (!toggle || !container) return;
+      // Load Giscus immediately in the background — toggle only shows/hides
       var theme = localStorage.getItem('theme') ||
         (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
       var giscusTheme = theme === 'light' ? container.dataset.themeLight : container.dataset.themeDark;
@@ -184,6 +186,11 @@
       s.setAttribute('crossorigin', 'anonymous');
       s.async = true;
       container.appendChild(s);
+      toggle.addEventListener('click', function () {
+        var expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+        container.classList.toggle('is-open', !expanded);
+      });
     })();
   </script>
   <script>

@@ -1231,15 +1231,38 @@ article hr {
 /* ── GISCUS COMMENTS ── */
 .giscus-wrap {
   border-top: 1px solid var(--border);
-  padding: 48px 0 80px;
+  padding: 40px 0 80px;
 }
+.giscus-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--text-dim);
+  transition: color 0.15s ease;
+}
+.giscus-toggle:hover { color: var(--text); }
 .giscus-label {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--text-dim);
-  margin-bottom: 24px;
+}
+.giscus-chevron {
+  transition: transform 0.2s ease;
+}
+.giscus-toggle[aria-expanded="true"] .giscus-chevron {
+  transform: rotate(180deg);
+}
+.giscus-body {
+  display: none;
+  margin-top: 24px;
+}
+.giscus-body.is-open {
+  display: block;
 }
 
 /* ── PROGRESS BAR ── */

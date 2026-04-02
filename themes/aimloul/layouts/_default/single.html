@@ -85,15 +85,21 @@
 {{ end }}
 
 {{ with .Site.Params.giscusRepo }}
-<div class="giscus-wrap"
-  id="giscus-container"
-  data-repo="{{ . }}"
-  data-repo-id="{{ $.Site.Params.giscusRepoId }}"
-  data-category="{{ $.Site.Params.giscusCategory }}"
-  data-category-id="{{ $.Site.Params.giscusCategoryId }}"
-  data-theme-dark="{{ $.Site.BaseURL }}giscus-dark.css"
-  data-theme-light="{{ $.Site.BaseURL }}giscus-light.css">
-  <p class="giscus-label">Comments</p>
+<div class="giscus-wrap">
+  <button class="giscus-toggle" id="giscus-toggle" aria-expanded="false" aria-controls="giscus-container">
+    <span class="giscus-label">Comments</span>
+    <svg class="giscus-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <polyline points="3,5 7,9 11,5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+  </button>
+  <div class="giscus-body" id="giscus-container"
+    data-repo="{{ . }}"
+    data-repo-id="{{ $.Site.Params.giscusRepoId }}"
+    data-category="{{ $.Site.Params.giscusCategory }}"
+    data-category-id="{{ $.Site.Params.giscusCategoryId }}"
+    data-theme-dark="{{ $.Site.BaseURL }}giscus-dark.css"
+    data-theme-light="{{ $.Site.BaseURL }}giscus-light.css">
+  </div>
 </div>
 {{ end }}
 
