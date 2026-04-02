@@ -1,0 +1,22 @@
+{{ if not (.Page.Store.Get "mermaid-loaded") }}
+{{ .Page.Store.Set "mermaid-loaded" true }}
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  function initMermaid() {
+    var theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark';
+    mermaid.initialize({ startOnLoad: false, theme: theme, securityLevel: 'loose' });
+    mermaid.run();
+  }
+  document.addEventListener('DOMContentLoaded', initMermaid);
+  var toggle = document.getElementById('theme-toggle');
+  if (toggle) {
+    toggle.addEventListener('click', function () { setTimeout(initMermaid, 0); });
+  }
+</script>
+{{ end }}
+<div class="diagram">
+  <div class="diagram-inner">
+    <pre class="mermaid">{{ .Inner }}</pre>
+  </div>
+  {{ with .Get "caption" }}<span class="diagram-caption">{{ . }}</span>{{ end }}
+</div>

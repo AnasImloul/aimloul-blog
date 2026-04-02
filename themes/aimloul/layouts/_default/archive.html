@@ -14,12 +14,13 @@
     "date"     (.Date.Format "Jan 2006")
     "tags"     $tags
     "readTime" $readTime
+    "content"  (.Plain | truncate 500)
   ) }}
 {{ end }}
 <script>var ARCHIVE_POSTS = {{ $posts | jsonify | safeJS }};</script>
 
 <div class="archive-header">
-  <input id="archive-search" class="archive-search" type="text" placeholder="Search by title or tag…" autocomplete="off" spellcheck="false" />
+  <input id="archive-search" class="archive-search" type="text" placeholder="Search posts…" autocomplete="off" spellcheck="false" />
 </div>
 
 <div id="archive-tag-filters" class="archive-tag-filters"></div>
@@ -55,7 +56,8 @@
     return POSTS.filter(function (p) {
       var matchesQuery = !q ||
         p.title.toLowerCase().includes(q) ||
-        (p.tags || []).some(function (t) { return t.toLowerCase().includes(q); });
+        (p.tags || []).some(function (t) { return t.toLowerCase().includes(q); }) ||
+        (p.content || '').toLowerCase().includes(q);
       var matchesTags = activeTags.size === 0 ||
         (p.tags || []).some(function (t) { return activeTags.has(t); });
       return matchesQuery && matchesTags;

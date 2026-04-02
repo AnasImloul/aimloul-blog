@@ -4,7 +4,7 @@
 {{ $dir := strings.TrimPrefix "posts/" .Page.File.Dir }}
 {{ $dark  := resources.Get (printf "diagrams/%s%s-dark.svg"  $dir $src) }}
 {{ $light := resources.Get (printf "diagrams/%s%s-light.svg" $dir $src) }}
-<figure class="diagram" role="img" aria-label="{{ $alt }}">
+<figure class="diagram diagram-clickable" role="button" tabindex="0" aria-label="Click to enlarge: {{ $alt }}">
   {{ with $dark }}
   <div class="diagram-inner diagram-dark">{{ .Content | safeHTML }}</div>
   {{ end }}

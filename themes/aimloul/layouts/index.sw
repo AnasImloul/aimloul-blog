@@ -1,8 +1,9 @@
-const CACHE = 'a.imloul-v1';
+{{- $latest := index (.Site.Pages.ByLastmod.Reverse) 0 -}}
+{{- $version := $latest.Lastmod.Format "20060102150405" -}}
+const CACHE = 'aimloul-{{ $version }}';
 const OFFLINE_URL = '/offline/';
 const NETWORK_TIMEOUT_MS = 4000;
 
-// Pre-cache the shell on install
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(CACHE).then(function (cache) {
@@ -12,7 +13,6 @@ self.addEventListener('install', function (event) {
   self.skipWaiting();
 });
 
-// Delete old caches on activate
 self.addEventListener('activate', function (event) {
   event.waitUntil(
     caches.keys().then(function (keys) {
@@ -26,7 +26,6 @@ self.addEventListener('activate', function (event) {
   self.clients.claim();
 });
 
-// Race a fetch against a timeout — fixes iOS Safari's slow offline detection
 function fetchWithTimeout(request) {
   return new Promise(function (resolve, reject) {
     var done = false;
@@ -45,17 +44,14 @@ self.addEventListener('fetch', function (event) {
   var request = event.request;
   var url = new URL(request.url);
 
-  // Only handle GET requests from this origin
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
 
   if (request.destination === 'document') {
     event.respondWith(
       caches.match(request).then(function (cached) {
-        // iOS fix: if known offline, skip the network entirely and serve cache immediately
         if (!navigator.onLine) {
           return cached || caches.match(OFFLINE_URL);
         }
-        // Online: race network against timeout, update cache on success
         return fetchWithTimeout(request).then(function (response) {
           var clone = response.clone();
           caches.open(CACHE).then(function (cache) { cache.put(request, clone); });
@@ -66,7 +62,6 @@ self.addEventListener('fetch', function (event) {
       })
     );
   } else {
-    // Assets (CSS, SVG): cache first — fingerprinted URLs never go stale
     event.respondWith(
       caches.match(request).then(function (cached) {
         if (cached) return cached;

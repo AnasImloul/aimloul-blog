@@ -1,0 +1,14 @@
+<a href="{{ .RelPermalink }}" class="post-card"{{ with .CurrentSection.Title }} data-section="{{ . | urlize }}"{{ end }}>
+  {{ with .CurrentSection.Title }}
+  <span class="post-category">{{ . }}</span>
+  {{ end }}
+  <h2 class="post-title">{{ .Title | safeHTML }}</h2>
+  {{ with .Params.subtitle }}
+  <p class="post-subtitle">{{ . }}</p>
+  {{ end }}
+  <div class="post-meta">
+    <span>{{ .Date.Format "Jan 2006" }}</span>
+    <span class="meta-dot">&middot;</span>
+    <span>{{ partial "read-time.html" . }}</span>
+  </div>
+</a>

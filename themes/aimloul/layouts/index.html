@@ -13,20 +13,7 @@
 
 <div class="post-list">
   {{ range $posts }}
-  <a href="{{ .RelPermalink }}" class="post-card" data-section="{{ .CurrentSection.Title | urlize }}">
-    {{ with .CurrentSection.Title }}
-    <span class="post-category">{{ . }}</span>
-    {{ end }}
-    <h2 class="post-title">{{ .Title | safeHTML }}</h2>
-    {{ with .Params.subtitle }}
-    <p class="post-subtitle">{{ . }}</p>
-    {{ end }}
-    <div class="post-meta">
-      <span>{{ .Date.Format "Jan 2006" }}</span>
-      <span class="meta-dot">·</span>
-      <span>{{ with .Params.readTime }}{{ . }}{{ else }}{{ div (add .WordCount 237) 238 }} min read{{ end }}</span>
-    </div>
-  </a>
+  {{ partial "post-card.html" . }}
   {{ end }}
 </div>
 

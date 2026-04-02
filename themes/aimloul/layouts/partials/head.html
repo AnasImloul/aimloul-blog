@@ -1,0 +1,66 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title | plainify }} — {{ .Site.Title }}{{ end }}</title>
+
+{{- $desc := "" -}}
+{{- with .Params.subtitle -}}
+  {{- $desc = . -}}
+{{- else -}}
+  {{- with .Summary | plainify | truncate 160 -}}
+    {{- $desc = . -}}
+  {{- else -}}
+    {{- with .Site.Params.description -}}
+      {{- $desc = . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+<meta name="description" content="{{ $desc }}" />
+<link rel="canonical" href="{{ .Permalink }}" />
+<meta name="author" content="{{ .Params.author | default .Site.Params.author }}" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
+<meta property="og:url" content="{{ .Permalink }}" />
+<meta property="og:site_name" content="{{ .Site.Title }}" />
+<meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title | plainify }}{{ end }}" />
+<meta property="og:description" content="{{ $desc }}" />
+{{ $ogImage := "" }}
+{{ if or .IsPage .IsHome }}{{ $ogImage = partial "og-image.html" . }}{{ end }}
+{{ if not $ogImage }}{{ $ogImage = .Params.image | default .Site.Params.ogImage | absURL }}{{ end }}
+{{ with $ogImage }}
+<meta property="og:image" content="{{ . }}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="{{ if $.IsHome }}{{ $.Site.Title }}{{ else }}{{ $.Title | plainify }}{{ end }}" />
+{{ end }}
+{{ if .IsPage }}
+<meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" />
+<meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}" />
+<meta property="article:author" content="{{ .Params.author | default .Site.Params.author }}" />
+{{ range .Params.tags }}<meta property="article:tag" content="{{ . }}" />
+{{ end }}{{ end }}
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title | plainify }}{{ end }}" />
+<meta name="twitter:description" content="{{ $desc }}" />
+{{ with $ogImage }}<meta name="twitter:image" content="{{ . }}" />{{ end }}
+
+{{ partial "structured-data.html" . }}
+
+<link rel="icon" type="image/svg+xml" href="{{ "favicon.svg" | relURL }}" />
+<link rel="manifest" href="{{ "manifest.json" | relURL }}" />
+<meta name="theme-color" content="#0e0c0a" />
+{{ $css := resources.Get "css/main.css" | fingerprint }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous" />
+{{ if .Params.math }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+{{ end }}
+
+<script>
+  (function () {
+    var saved = localStorage.getItem('theme');
+    var system = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', saved || system);
+  })();
+</script>

@@ -1,0 +1,48 @@
+{{- $desc := "" -}}
+{{- with .Params.subtitle -}}
+  {{- $desc = . -}}
+{{- else -}}
+  {{- with .Summary | plainify | truncate 160 -}}
+    {{- $desc = . -}}
+  {{- else -}}
+    {{- with .Site.Params.description -}}
+      {{- $desc = . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{ if .IsHome }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": {{ .Site.Title | jsonify }},
+  "description": {{ $desc | jsonify }},
+  "url": "{{ .Site.BaseURL }}"
+}
+</script>
+{{ else if eq .Layout "about" }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": {{ .Title | jsonify }},
+  "description": {{ $desc | jsonify }},
+  "url": "{{ .Permalink }}"
+}
+</script>
+{{ else if .IsPage }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": {{ .Title | jsonify }},
+  "description": {{ $desc | jsonify }},
+  "datePublished": "{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}",
+  "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}",
+  "author": { "@type": "Person", "name": {{ (.Params.author | default .Site.Params.author) | jsonify }} },
+  "url": "{{ .Permalink }}",
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ .Permalink }}" }
+}
+</script>
+{{ end }}

@@ -1,0 +1,27 @@
+<a href="#main-content" class="skip-to-content">Skip to content</a>
+<div class="container">
+  <header class="site-header">
+    <div class="site-header-row">
+      {{ if or .IsHome (eq .Layout "archive") }}
+      <a href="{{ "/" | relURL }}" class="site-name">{{ .Site.Title }}</a>
+      {{ else if .IsSection }}
+      <a href="{{ "/" | relURL }}" class="site-name">{{ .Site.Title }}</a>
+      {{ else }}
+      {{ block "nav-back" . }}<span></span>{{ end }}
+      {{ end }}
+      <nav class="site-nav-right">
+        <a href="{{ "/" | relURL }}" class="nav-link{{ if or .IsHome .IsSection }} nav-active{{ end }}">home</a>
+        <a href="{{ "/archive/" | relURL }}" class="nav-link{{ if eq .RelPermalink "/archive/" }} nav-active{{ end }}">archive</a>
+        <a href="{{ "/about/" | relURL }}" class="nav-link{{ if eq .RelPermalink "/about/" }} nav-active{{ end }}">about</a>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle colour theme">
+          {{ partial "icons.html" "sun" }}
+          {{ partial "icons.html" "moon" }}
+        </button>
+      </nav>
+    </div>
+    {{ if or .IsHome (eq .Layout "archive") }}
+    {{ with .Site.Params.description }}
+    <p class="site-desc">{{ . }}</p>
+    {{ end }}
+    {{ end }}
+  </header>

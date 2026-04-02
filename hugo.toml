@@ -5,6 +5,18 @@ theme = 'aimloul'
 enableRobotsTXT = true
 enableGitInfo = true
 
+[mediaTypes."application/javascript"]
+  suffixes = ["js"]
+
+[outputFormats.SW]
+  mediaType = "application/javascript"
+  baseName = "sw"
+  isPlainText = true
+  notAlternative = true
+
+[outputs]
+  home = ["HTML", "RSS", "SW"]
+
 [related]
   includeNewer = true
   threshold = 50
