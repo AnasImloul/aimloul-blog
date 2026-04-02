@@ -47,7 +47,7 @@
     {{- end -}}
 
     {{- if $subtitle -}}
-      {{- $allSubtitleLines := partial "wordwrap.html" (dict "text" $subtitle "max" 72) -}}
+      {{- $allSubtitleLines := partial "wordwrap.html" (dict "text" $subtitle "max" 60) -}}
       {{- $subtitleLines := $allSubtitleLines | first 2 -}}
       {{- if gt (len $allSubtitleLines) 2 -}}
         {{- $li := sub (len $subtitleLines) 1 -}}
