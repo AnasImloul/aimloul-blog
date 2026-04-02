@@ -85,13 +85,13 @@
 
 {{ with .Site.Params.giscusRepo }}
 <div class="giscus-wrap">
-  <button class="giscus-toggle" id="giscus-toggle" aria-expanded="false" aria-controls="giscus-container">
+  <button class="giscus-toggle" id="giscus-toggle" aria-expanded="true" aria-controls="giscus-container">
     <span class="giscus-label">Comments</span>
     <svg class="giscus-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
       <polyline points="3,5 7,9 11,5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     </svg>
   </button>
-  <div class="giscus-body" id="giscus-container"
+  <div class="giscus-body is-open" id="giscus-container"
     data-repo="{{ . }}"
     data-repo-id="{{ $.Site.Params.giscusRepoId }}"
     data-category="{{ $.Site.Params.giscusCategory }}"
