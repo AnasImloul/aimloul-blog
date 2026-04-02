@@ -65,25 +65,6 @@
   </div>
 </div>
 
-{{ $prev := .PrevInSection }}
-{{ $next := .NextInSection }}
-{{ if or $prev $next }}
-<nav class="post-nav" aria-label="Post navigation">
-  {{ if $prev }}
-  <a href="{{ $prev.RelPermalink }}" class="post-nav-link is-prev">
-    <span class="post-nav-direction">&larr; Previous</span>
-    <span class="post-nav-title">{{ $prev.Title | safeHTML }}</span>
-  </a>
-  {{ else }}<div class="post-nav-placeholder"></div>{{ end }}
-  {{ if $next }}
-  <a href="{{ $next.RelPermalink }}" class="post-nav-link is-next">
-    <span class="post-nav-direction">Next &rarr;</span>
-    <span class="post-nav-title">{{ $next.Title | safeHTML }}</span>
-  </a>
-  {{ else }}<div class="post-nav-placeholder"></div>{{ end }}
-</nav>
-{{ end }}
-
 {{ $readNext := .NextInSection }}
 {{ with .Params.next }}
   {{ $slug := . }}
