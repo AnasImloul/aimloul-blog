@@ -12,25 +12,51 @@ int1: "Internal\n| 100 | 200 |\n"
 int2: "Internal\n| 400 | 600 |\n"
 int3: "Internal\n| 800 | 900 |\n"
 
-leaf1: "Leaf\n| 50 | 80 |"
-leaf2: "Leaf\n| 110 | 160 |"
-leaf3: "Leaf\n| 210 | 260 |"
-leaf4: "Leaf\n| 310 | 380 |"
-leaf5: "Leaf\n| 410 | 560 |"
-leaf6: "Leaf\n| 610 | 680 |"
-leaf7: "Leaf\n| 710 | 780 |"
-leaf8: "Leaf\n| 810 | 880 |"
-leaf9: "Leaf\n| 910 | 980 |"
-
-row1: "rows"
-row2: "rows"
-row3: "rows"
-row4: "rows"
-row5: "rows"
-row6: "rows"
-row7: "rows"
-row8: "rows"
-row9: "rows"
+leaf1: "Leaf" {
+  shape: sql_table
+  50: row_data
+  80: row_data
+}
+leaf2: "Leaf" {
+  shape: sql_table
+  110: row_data
+  160: row_data
+}
+leaf3: "Leaf" {
+  shape: sql_table
+  210: row_data
+  260: row_data
+}
+leaf4: "Leaf" {
+  shape: sql_table
+  310: row_data
+  380: row_data
+}
+leaf5: "Leaf" {
+  shape: sql_table
+  410: row_data
+  560: row_data
+}
+leaf6: "Leaf" {
+  shape: sql_table
+  610: row_data
+  680: row_data
+}
+leaf7: "Leaf" {
+  shape: sql_table
+  710: row_data
+  780: row_data
+}
+leaf8: "Leaf" {
+  shape: sql_table
+  810: row_data
+  880: row_data
+}
+leaf9: "Leaf" {
+  shape: sql_table
+  910: row_data
+  980: row_data
+}
 
 spine: {
   label: "← sequential scan →"
@@ -58,24 +84,14 @@ int3 -> leaf7
 int3 -> leaf8
 int3 -> leaf9
 
-leaf1 -> row1
-leaf2 -> row2
-leaf3 -> row3
-leaf4 -> row4
-leaf5 -> row5
-leaf6 -> row6
-leaf7 -> row7
-leaf8 -> row8
-leaf9 -> row9
-
-row1 -> spine: {
+leaf1 -> spine: {
   style: {
     stroke: "transparent"
     stroke-width: 0
   }
 }
 
-row9 -> spine: {
+leaf9 -> spine: {
   style: {
     stroke: "transparent"
     stroke-width: 0
