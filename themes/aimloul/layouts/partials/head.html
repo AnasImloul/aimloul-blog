@@ -1,16 +1,20 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title | plainify }} — {{ .Site.Title }}{{ end }}</title>
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ with .Site.Params.tagline }} — {{ . }}{{ end }}{{ else }}{{ .Title | plainify }} — {{ .Site.Title }}{{ end }}</title>
 
 {{- $desc := "" -}}
-{{- with .Params.subtitle -}}
+{{- with .Params.description -}}
   {{- $desc = . -}}
 {{- else -}}
-  {{- with .Summary | plainify | truncate 160 -}}
+  {{- with .Params.subtitle -}}
     {{- $desc = . -}}
   {{- else -}}
-    {{- with .Site.Params.description -}}
+    {{- with .Summary | plainify | truncate 160 -}}
       {{- $desc = . -}}
+    {{- else -}}
+      {{- with .Site.Params.description -}}
+        {{- $desc = . -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
@@ -48,9 +52,15 @@
 
 {{ partial "structured-data.html" . }}
 
+<link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="{{ "index.xml" | absURL }}" />
 <link rel="icon" type="image/svg+xml" href="{{ "favicon.svg" | relURL }}" />
 <link rel="manifest" href="{{ "manifest.json" | relURL }}" />
 <meta name="theme-color" content="#0e0c0a" />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/bricolage-grotesque-latin.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/dm-mono-400-latin.woff2" crossorigin />
+{{ if .Params.math }}
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+{{ end }}
 {{ $css := resources.Get "css/main.css" | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous" />
 {{ if .Params.math }}

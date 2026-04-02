@@ -217,9 +217,16 @@ body::before {
   transition: color 0.15s ease;
 }
 
-.site-header a.site-name {
+.site-header a.site-name,
+.site-header h1.site-name a {
   color: var(--text);
   font-weight: 500;
+}
+h1.site-name {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
 }
 
 .site-nav-right {

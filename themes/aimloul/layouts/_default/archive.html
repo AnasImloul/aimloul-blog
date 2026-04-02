@@ -1,8 +1,10 @@
 {{ define "main" }}
 
 {{/* Build posts data — merge category into tags for unified filtering */}}
+{{ $allPages := (where .Site.RegularPages "Type" "posts").ByDate.Reverse }}
 {{ $posts := slice }}
-{{ range (where .Site.RegularPages "Type" "posts").ByDate.Reverse }}
+{{ $tagSet := slice }}
+{{ range $allPages }}
   {{ $tags := .Params.tags }}
   {{ if not $tags }}{{ $tags = slice }}{{ end }}
   {{ with .CurrentSection.Title }}{{ $tags = $tags | append . }}{{ end }}
@@ -16,16 +18,23 @@
     "readTime" $readTime
     "content"  (.Plain | truncate 500)
   ) }}
+  {{ range $tags }}{{ $tagSet = $tagSet | append . }}{{ end }}
 {{ end }}
+{{ $tagSet = sort ($tagSet | uniq) }}
 <script>var ARCHIVE_POSTS = {{ $posts | jsonify | safeJS }};</script>
 
 <div class="archive-header">
   <input id="archive-search" class="archive-search" type="text" placeholder="Search posts…" autocomplete="off" spellcheck="false" />
 </div>
 
-<div id="archive-tag-filters" class="archive-tag-filters"></div>
+{{ if $tagSet }}
+<div id="archive-tag-filters" class="archive-tag-filters">
+  {{ range $tagSet }}<button class="archive-tag-chip" data-tag="{{ . }}">{{ . }}</button>
+  {{ end }}
+</div>
+{{ end }}
 
-<p id="archive-meta" class="archive-meta"></p>
+<p id="archive-meta" class="archive-meta">{{ len $posts }} posts</p>
 
 <table class="archive-table" id="archive-table">
   <thead>
@@ -36,10 +45,22 @@
       <th class="col-read">Read</th>
     </tr>
   </thead>
-  <tbody id="archive-tbody"></tbody>
+  <tbody id="archive-tbody">
+    {{ range $allPages }}
+    {{ $tags := .Params.tags }}
+    {{ if not $tags }}{{ $tags = slice }}{{ end }}
+    {{ with .CurrentSection.Title }}{{ $tags = $tags | append . }}{{ end }}
+    <tr class="archive-row" data-url="{{ .RelPermalink }}">
+      <td class="col-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></td>
+      <td class="col-tags">{{ range $tags }}<span class="archive-tag" data-tag="{{ . }}">{{ . }}</span>{{ end }}</td>
+      <td class="col-date">{{ .Date.Format "Jan 2006" }}</td>
+      <td class="col-read">{{ partial "read-time.html" . }}</td>
+    </tr>
+    {{ end }}
+  </tbody>
 </table>
 
-<p id="archive-empty" class="archive-empty">No posts match your search.</p>
+<p id="archive-empty" class="archive-empty" style="display:none">No posts match your search.</p>
 
 <nav id="archive-pagination" class="archive-pagination"></nav>
 
@@ -106,7 +127,7 @@
                '" data-tag="' + t + '">' + t + '</span>';
       }).join('');
       return '<tr class="archive-row" data-url="' + p.url + '">' +
-        '<td class="col-title">' + p.title + '</td>' +
+        '<td class="col-title"><a href="' + p.url + '">' + p.title + '</a></td>' +
         '<td class="col-tags">' + tagsHtml + '</td>' +
         '<td class="col-date">' + p.date + '</td>' +
         '<td class="col-read">' + p.readTime + '</td>' +
@@ -114,7 +135,10 @@
     }).join('');
 
     tbody.querySelectorAll('.archive-row').forEach(function (row) {
-      row.addEventListener('click', function () { location.href = row.dataset.url; });
+      row.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        location.href = row.dataset.url;
+      });
     });
     tbody.querySelectorAll('.archive-tag').forEach(function (el) {
       el.addEventListener('click', function (e) {
@@ -149,24 +173,15 @@
     render();
   }
 
-  var allTags = Array.from(new Set(POSTS.flatMap(function (p) { return p.tags || []; }))).sort();
-  var filtersEl = document.getElementById('archive-tag-filters');
-  if (allTags.length > 0) {
-    filtersEl.innerHTML = allTags.map(function (t) {
-      return '<button class="archive-tag-chip" data-tag="' + t + '">' + t + '</button>';
-    }).join('');
-    filtersEl.querySelectorAll('.archive-tag-chip').forEach(function (el) {
-      el.addEventListener('click', function () { toggleTag(el.dataset.tag); });
-    });
-  }
+  document.querySelectorAll('.archive-tag-chip').forEach(function (el) {
+    el.addEventListener('click', function () { toggleTag(el.dataset.tag); });
+  });
 
   document.getElementById('archive-search').addEventListener('input', function (e) {
     query = e.target.value;
     currentPage = 1;
     render();
   });
-
-  render();
 })();
 </script>
 {{ end }}

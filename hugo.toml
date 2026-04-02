@@ -33,7 +33,8 @@ enableGitInfo = true
 [params]
   author = 'Imloul Anas'
   description = 'Writing about database internals, systems design, and backend engineering.'
-  ogImage = '/og-image.svg'
+  tagline = 'Database Internals & Software Engineering Blog'
+  ogImage = '/og-image.png'
   ogTheme = 'light'
   giscusRepo = 'AnasImloul/aimloul-blog'
   giscusRepoId = 'R_kgDOR1LvxQ'

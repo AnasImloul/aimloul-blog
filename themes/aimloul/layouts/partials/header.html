@@ -2,9 +2,9 @@
 <div class="container">
   <header class="site-header">
     <div class="site-header-row">
-      {{ if or .IsHome (eq .Layout "archive") }}
-      <a href="{{ "/" | relURL }}" class="site-name">{{ .Site.Title }}</a>
-      {{ else if .IsSection }}
+      {{ if .IsHome }}
+      <h1 class="site-name"><a href="{{ "/" | relURL }}">{{ .Site.Title }}</a></h1>
+      {{ else if or (eq .Layout "archive") .IsSection }}
       <a href="{{ "/" | relURL }}" class="site-name">{{ .Site.Title }}</a>
       {{ else }}
       {{ block "nav-back" . }}<span></span>{{ end }}
