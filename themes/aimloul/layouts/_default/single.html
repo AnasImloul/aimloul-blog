@@ -1,7 +1,6 @@
 {{ define "nav-back" }}<a href="{{ "/" | relURL }}?tab={{ .CurrentSection.Title | urlize }}" class="nav-back">← {{ .CurrentSection.Title }}</a>{{ end }}
 
 {{ define "main" }}
-<div id="progress-bar" aria-hidden="true"></div>
 {{ if .TableOfContents }}
 <aside class="toc-sidebar" aria-label="On this page">
   <p class="toc-label">On this page</p>

@@ -195,18 +195,24 @@
   </script>
   <script>
     (function () {
-      var btn = document.getElementById('copy-link-btn');
-      if (!btn) return;
-      btn.addEventListener('click', function () {
-        navigator.clipboard.writeText(window.location.href).then(function () {
-          btn.classList.add('copied');
-          btn.setAttribute('aria-label', 'Copied!');
-          setTimeout(function () {
-            btn.classList.remove('copied');
-            btn.setAttribute('aria-label', 'Copy link');
-          }, 2000);
+      var toastTimer;
+      window._showToast = function (msg) {
+        var toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('is-visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { toast.classList.remove('is-visible'); }, 2000);
+      };
+      var copyLink = document.getElementById('copy-link-btn');
+      if (copyLink) {
+        copyLink.addEventListener('click', function () {
+          navigator.clipboard.writeText(window.location.href).then(function () {
+            copyLink.classList.add('copied');
+            setTimeout(function () { copyLink.classList.remove('copied'); }, 2000);
+            window._showToast('Link copied!');
+          });
         });
-      });
+      }
     })();
   </script>
   <script>
@@ -267,20 +273,14 @@
   </script>
   <script>
     (function () {
-      var bar = document.getElementById('progress-bar');
       var btn = document.getElementById('back-to-top');
-      if (!bar && !btn) return;
+      if (!btn) return;
       window.addEventListener('scroll', function () {
-        var scrollTop = window.scrollY;
-        var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        if (bar) bar.style.width = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0) + '%';
-        if (btn) btn.classList.toggle('is-visible', scrollTop > 300);
+        btn.classList.toggle('is-visible', window.scrollY > 300);
       }, { passive: true });
-      if (btn) {
-        btn.addEventListener('click', function () {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-      }
+      btn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
     })();
   </script>
   <script>
@@ -291,15 +291,13 @@
           if (!pre) return;
           navigator.clipboard.writeText(pre.innerText).then(function () {
             btn.classList.add('copied');
-            btn.setAttribute('aria-label', 'Copied!');
-            setTimeout(function () {
-              btn.classList.remove('copied');
-              btn.setAttribute('aria-label', 'Copy code');
-            }, 2000);
+            setTimeout(function () { btn.classList.remove('copied'); }, 2000);
+            window._showToast('Code copied!');
           });
         });
       });
     })();
   </script>
+  <div id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

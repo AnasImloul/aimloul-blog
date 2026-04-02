@@ -1265,17 +1265,28 @@ article hr {
   display: block;
 }
 
-/* ── PROGRESS BAR ── */
-#progress-bar {
+/* ── TOAST ── */
+#toast {
   position: fixed;
-  top: 0;
-  left: 0;
-  height: 2px;
-  width: 0%;
-  background: var(--accent);
-  z-index: 10000;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: var(--text);
+  color: var(--bg);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  padding: 8px 16px;
+  border-radius: 6px;
+  opacity: 0;
   pointer-events: none;
-  transition: width 0.08s linear;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 10000;
+  white-space: nowrap;
+}
+#toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* ── BACK TO TOP ── */
