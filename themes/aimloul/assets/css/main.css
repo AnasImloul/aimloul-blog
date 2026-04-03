@@ -1513,7 +1513,7 @@ article hr {
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--surface), rgba(255, 255, 255, 0));
+  background: var(--surface);
 }
 
 .hub-section {
@@ -1747,6 +1747,9 @@ article hr {
 .tool-card .status-badge {
   display: inline-block;
   width: fit-content;
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 /* ── TOOL CARDS ── */
