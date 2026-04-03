@@ -4,14 +4,16 @@
     <div class="site-header-row">
       {{ if .IsHome }}
       <h1 class="site-name"><a href="{{ "/" | relURL }}">{{ .Site.Title }}</a></h1>
-      {{ else if or (eq .Layout "archive") .IsSection }}
-      <a href="{{ "/" | relURL }}" class="site-name">{{ .Site.Title }}</a>
       {{ else }}
-      {{ block "nav-back" . }}<span></span>{{ end }}
+      <a href="{{ "/" | relURL }}" class="site-name">{{ .Site.Title }}</a>
       {{ end }}
       <nav class="site-nav-right">
-        <a href="{{ "/" | relURL }}" class="nav-link{{ if or .IsHome .IsSection }} nav-active{{ end }}">home</a>
-        <a href="{{ "/archive/" | relURL }}" class="nav-link{{ if eq .RelPermalink "/archive/" }} nav-active{{ end }}">archive</a>
+        {{- $section := "" -}}
+        {{- with .CurrentSection -}}{{ $section = .Type }}{{- end -}}
+        <a href="{{ "/blog/" | relURL }}" class="nav-link{{ if eq $section "blog" }} nav-active{{ end }}">blog</a>
+        <a href="{{ "/projects/" | relURL }}" class="nav-link{{ if eq $section "projects" }} nav-active{{ end }}">projects</a>
+        <a href="{{ "/tools/" | relURL }}" class="nav-link{{ if eq $section "tools" }} nav-active{{ end }}">tools</a>
+        <a href="{{ "/notes/" | relURL }}" class="nav-link{{ if eq $section "notes" }} nav-active{{ end }}">notes</a>
         <a href="{{ "/about/" | relURL }}" class="nav-link{{ if eq .RelPermalink "/about/" }} nav-active{{ end }}">about</a>
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle colour theme">
           {{ partial "icons.html" "sun" }}
@@ -19,9 +21,4 @@
         </button>
       </nav>
     </div>
-    {{ if or .IsHome (eq .Layout "archive") }}
-    {{ with .Site.Params.description }}
-    <p class="site-desc">{{ . }}</p>
-    {{ end }}
-    {{ end }}
   </header>

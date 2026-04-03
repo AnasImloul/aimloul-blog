@@ -57,8 +57,11 @@
 <script type="application/ld+json">{{ $ld | jsonify | safeJS }}</script>
 
 {{- $crumbs := slice (dict "@type" "ListItem" "position" 1 "name" "Home" "item" $.Site.BaseURL) -}}
+{{- $crumbs = $crumbs | append (dict "@type" "ListItem" "position" 2 "name" "Blog" "item" (printf "%sblog/" $.Site.BaseURL)) -}}
 {{- with .CurrentSection.Title -}}
-  {{- $crumbs = $crumbs | append (dict "@type" "ListItem" "position" 2 "name" . "item" (printf "%s?tab=%s" $.Site.BaseURL (. | urlize))) -}}
+  {{- if ne . "Blog" -}}
+  {{- $crumbs = $crumbs | append (dict "@type" "ListItem" "position" 3 "name" . "item" (printf "%sblog/?tab=%s" $.Site.BaseURL (. | urlize))) -}}
+  {{- end -}}
 {{- end -}}
 {{- $crumbs = $crumbs | append (dict "@type" "ListItem" "position" (add (len $crumbs) 1) "name" ($.Title | plainify)) -}}
 {{- $bc := dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $crumbs -}}

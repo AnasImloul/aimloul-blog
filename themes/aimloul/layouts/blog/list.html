@@ -1,0 +1,54 @@
+{{ define "main" }}
+{{ $posts := .RegularPagesRecursive.ByDate.Reverse }}
+{{ $sections := .Sections }}
+
+<header class="section-header">
+  <h1>{{ .Title }}</h1>
+  {{ with .Description }}
+  <p class="site-desc">{{ . }}</p>
+  {{ end }}
+</header>
+
+{{ if $sections }}
+<div class="tab-bar">
+  <button class="tab-btn is-active" data-tab="all">All</button>
+  {{ range $sections }}
+  <button class="tab-btn" data-tab="{{ .Title | urlize }}">{{ .Title }}</button>
+  {{ end }}
+</div>
+{{ end }}
+
+<div class="post-list">
+  {{ range $posts }}
+  {{ partial "post-card.html" . }}
+  {{ end }}
+</div>
+
+{{ if $sections }}
+<script>
+  (function () {
+    var btns  = document.querySelectorAll('.tab-btn');
+    var cards = document.querySelectorAll('.post-card');
+
+    function activateTab(tab) {
+      btns.forEach(function (b) { b.classList.remove('is-active'); });
+      var active = document.querySelector('.tab-btn[data-tab="' + tab + '"]');
+      if (active) active.classList.add('is-active');
+      cards.forEach(function (card) {
+        card.classList.toggle('is-hidden', tab !== 'all' && card.dataset.section !== tab);
+      });
+    }
+
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () { activateTab(this.dataset.tab); });
+    });
+
+    var initTab = new URLSearchParams(location.search).get('tab');
+    if (initTab) {
+      activateTab(initTab);
+      history.replaceState(null, '', location.pathname);
+    }
+  })();
+</script>
+{{ end }}
+{{ end }}

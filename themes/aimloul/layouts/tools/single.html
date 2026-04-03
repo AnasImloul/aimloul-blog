@@ -1,0 +1,27 @@
+{{ define "nav-back" }}<a href="{{ "/tools/" | relURL }}" class="nav-back">&larr; Tools</a>{{ end }}
+
+{{ define "main" }}
+{{ $external := .Params.externalUrl | default .Params.url }}
+<article>
+  <header>
+    <div class="eyebrow">Tool</div>
+    <h1>{{ .Title | safeHTML }}</h1>
+    {{ with .Params.subtitle }}
+    <p class="subtitle">{{ . }}</p>
+    {{ end }}
+    {{ with $external }}
+    <div class="meta">
+      <a href="{{ . }}" target="_blank" rel="noopener noreferrer" class="meta-link">{{ partial "icons.html" "external" }} Open tool</a>
+    </div>
+    {{ end }}
+  </header>
+
+  {{ if and .Params.embed $external }}
+  <div class="tool-embed">
+    <iframe src="{{ $external }}" title="{{ .Title }}" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+  </div>
+  {{ end }}
+
+  {{ .Content }}
+</article>
+{{ end }}

@@ -29,7 +29,7 @@
 <meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title | plainify }}{{ end }}" />
 <meta property="og:description" content="{{ $desc }}" />
 {{ $ogImage := "" }}
-{{ if or .IsPage .IsHome }}{{ $ogImage = partial "og-image.html" . }}{{ end }}
+{{ $ogImage = partial "og-image.html" . | strings.TrimSpace }}
 {{ if not $ogImage }}{{ $ogImage = .Params.image | default .Site.Params.ogImage | absURL }}{{ end }}
 {{ with $ogImage }}
 <meta property="og:image" content="{{ . }}" />

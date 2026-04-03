@@ -1,0 +1,25 @@
+{{ define "nav-back" }}<a href="{{ "/projects/" | relURL }}" class="nav-back">&larr; Projects</a>{{ end }}
+
+{{ define "main" }}
+<article>
+  <header>
+    <div class="eyebrow">Project</div>
+    <h1>{{ .Title | safeHTML }}</h1>
+    {{ with .Params.subtitle }}
+    <p class="subtitle">{{ . }}</p>
+    {{ end }}
+    <div class="meta">
+      {{ with .Params.status }}
+      <span class="status-badge status-{{ . | urlize }}">{{ . }}</span>
+      {{ end }}
+      {{ with .Params.repo }}
+      <a href="{{ . }}" target="_blank" rel="noopener noreferrer" class="meta-link">{{ partial "icons.html" "github-sm" }} Source</a>
+      {{ end }}
+      {{ with .Params.url }}
+      <a href="{{ . }}" target="_blank" rel="noopener noreferrer" class="meta-link">{{ partial "icons.html" "external" }} Live</a>
+      {{ end }}
+    </div>
+  </header>
+  {{ .Content }}
+</article>
+{{ end }}

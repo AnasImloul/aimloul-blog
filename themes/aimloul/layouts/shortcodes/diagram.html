@@ -1,7 +1,7 @@
 {{ $src := .Get "src" }}
 {{ $caption := .Get "caption" }}
 {{ $alt := .Get "alt" | default $caption | default $src }}
-{{ $dir := strings.TrimPrefix "posts/" .Page.File.Dir }}
+{{ $dir := strings.TrimPrefix "blog/" .Page.File.Dir }}
 {{ $dark  := resources.Get (printf "diagrams/%s%s-dark.svg"  $dir $src) }}
 {{ $light := resources.Get (printf "diagrams/%s%s-light.svg" $dir $src) }}
 <figure class="diagram diagram-clickable" role="button" tabindex="0" aria-label="Click to enlarge: {{ $alt }}">

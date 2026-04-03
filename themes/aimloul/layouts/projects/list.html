@@ -1,0 +1,51 @@
+{{ define "main" }}
+{{ $projects := .RegularPages.ByDate.Reverse }}
+
+<header class="section-header">
+  <h1>{{ .Title }}</h1>
+  {{ with .Description }}
+  <p class="site-desc">{{ . }}</p>
+  {{ end }}
+</header>
+
+{{ if $projects }}
+<div class="project-list">
+  {{ range $projects }}
+  <div class="project-card">
+    <div class="project-card-top">
+      <h2 class="project-title">
+        {{ if .Params.url }}
+        <a href="{{ .Params.url }}" target="_blank" rel="noopener noreferrer">{{ .Title }}</a>
+        {{ else }}
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{ end }}
+      </h2>
+      {{ with .Params.status }}
+      <span class="status-badge status-{{ . | urlize }}">{{ . }}</span>
+      {{ end }}
+    </div>
+    {{ with .Params.subtitle }}
+    <p class="project-desc">{{ . }}</p>
+    {{ end }}
+    <div class="project-meta">
+      {{ with .Params.tags }}
+      <div class="project-tags">
+        {{ range . }}<span class="project-tag">{{ . }}</span>{{ end }}
+      </div>
+      {{ end }}
+      <div class="project-links">
+        {{ with .Params.repo }}
+        <a href="{{ . }}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="Source code">{{ partial "icons.html" "github-sm" }} code</a>
+        {{ end }}
+        {{ with .Params.url }}
+        <a href="{{ . }}" target="_blank" rel="noopener noreferrer" class="project-link" aria-label="Live demo">{{ partial "icons.html" "external" }} live</a>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+  {{ end }}
+</div>
+{{ else }}
+<p class="section-empty">No projects yet.</p>
+{{ end }}
+{{ end }}

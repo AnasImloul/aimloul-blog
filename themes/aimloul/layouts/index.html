@@ -1,47 +1,48 @@
 {{ define "main" }}
-{{ $posts := (where .Site.RegularPages "Type" "posts").ByDate.Reverse }}
-{{ $sections := (.Site.GetPage "/posts").Sections }}
+{{ $latest := index (where .Site.RegularPages "Type" "blog").ByDate.Reverse 0 }}
+<div class="hub">
+  <header class="hub-header">
+    <p class="eyebrow">Software Engineer</p>
+    <h1>Building ideas,<br>explaining systems.</h1>
+    <p class="hub-intro">{{ .Site.Params.intro }}</p>
+  </header>
 
-{{ if $sections }}
-<div class="tab-bar">
-  <button class="tab-btn is-active" data-tab="all">All</button>
-  {{ range $sections }}
-  <button class="tab-btn" data-tab="{{ .Title | urlize }}">{{ .Title }}</button>
+  {{ with $latest }}
+  <section class="hub-latest" aria-label="Latest article">
+    <p class="hub-sections-label">Latest article</p>
+    <a href="{{ .RelPermalink }}" class="hub-latest-link">
+      <span class="hub-latest-main">
+        {{ with .CurrentSection.Title }}
+        {{ if ne . "Blog" }}<span class="hub-latest-category">{{ . }}</span>{{ end }}
+        {{ end }}
+        <span class="hub-latest-title">{{ .Title | safeHTML }}</span>
+        {{ with .Params.subtitle }}<span class="hub-latest-subtitle">{{ . }}</span>{{ end }}
+        <span class="hub-latest-meta">{{ .Date.Format "Jan 2006" }} · {{ partial "read-time.html" . }}</span>
+      </span>
+    </a>
+  </section>
   {{ end }}
+
+  <header class="hub-sections-header">
+    <p class="hub-sections-label">Explore</p>
+  </header>
+
+  <nav class="hub-sections" aria-label="Site sections">
+    {{ range $i, $s := .Site.Params.sections }}
+    {{ $page := site.GetPage $s.url }}
+    {{ $count := 0 }}
+    {{ with $page }}{{ $count = len .RegularPagesRecursive }}{{ end }}
+    <a href="{{ $s.url | relURL }}" class="hub-section" style="--i:{{ $i }}">
+      <div class="hub-section-left">
+        <span class="hub-section-title">{{ $s.title }}</span>
+        {{ if gt $count 0 }}
+        <span class="hub-section-count">{{ $count }}</span>
+        {{ end }}
+      </div>
+      <span class="hub-section-desc">{{ $s.description }}</span>
+      <span class="hub-section-arrow">&rarr;</span>
+    </a>
+    {{ end }}
+  </nav>
 </div>
-{{ end }}
-
-<div class="post-list">
-  {{ range $posts }}
-  {{ partial "post-card.html" . }}
-  {{ end }}
-</div>
-
-{{ if $sections }}
-<script>
-  (function () {
-    var btns  = document.querySelectorAll('.tab-btn');
-    var cards = document.querySelectorAll('.post-card');
-
-    function activateTab(tab) {
-      btns.forEach(function (b) { b.classList.remove('is-active'); });
-      var active = document.querySelector('.tab-btn[data-tab="' + tab + '"]');
-      if (active) active.classList.add('is-active');
-      cards.forEach(function (card) {
-        card.classList.toggle('is-hidden', tab !== 'all' && card.dataset.section !== tab);
-      });
-    }
-
-    btns.forEach(function (btn) {
-      btn.addEventListener('click', function () { activateTab(this.dataset.tab); });
-    });
-
-    var initTab = new URLSearchParams(location.search).get('tab');
-    if (initTab) {
-      activateTab(initTab);
-      history.replaceState(null, '', location.pathname);
-    }
-  })();
-</script>
-{{ end }}
 {{ end }}

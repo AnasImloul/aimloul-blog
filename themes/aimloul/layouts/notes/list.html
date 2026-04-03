@@ -1,0 +1,26 @@
+{{ define "main" }}
+{{ $notes := .RegularPages.ByDate.Reverse }}
+
+<header class="section-header">
+  <h1>{{ .Title }}</h1>
+  {{ with .Description }}
+  <p class="site-desc">{{ . }}</p>
+  {{ end }}
+</header>
+
+{{ if $notes }}
+<div class="note-list">
+  {{ range $notes }}
+  <a href="{{ .RelPermalink }}" class="note-row">
+    <span class="note-date">{{ .Date.Format "Jan 02" }}</span>
+    <span class="note-title">{{ .Title }}</span>
+    {{ with .Params.tags }}
+    <span class="note-tags">{{ range . }}<span class="note-tag">{{ . }}</span>{{ end }}</span>
+    {{ end }}
+  </a>
+  {{ end }}
+</div>
+{{ else }}
+<p class="section-empty">No notes yet.</p>
+{{ end }}
+{{ end }}

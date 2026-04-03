@@ -16,6 +16,7 @@
   {{- if .IsHome -}}
 
     {{/* Home: large site name + description */}}
+    {{- $img = $img | images.Filter (images.Text .Site.Title (dict "color" $colorAccent "size" 22 "x" 80 "y" 56 "font" $monoFont)) -}}
     {{- $img = $img | images.Filter (images.Text .Site.Title (dict "color" $colorText "size" 80 "x" 80 "y" 200 "font" $monoFont)) -}}
     {{- $descLines := partial "wordwrap.html" (dict "text" .Site.Params.description "max" 40) | first 2 -}}
     {{- range $i, $line := $descLines -}}
@@ -24,11 +25,11 @@
     {{- end -}}
     {{- if $accent -}}{{- $img = $img | images.Filter (images.Overlay $accent 80 458) -}}{{- end -}}
 
-  {{- else if eq .Section "posts" -}}
+  {{- else if and .IsPage (eq .Type "blog") -}}
 
-    {{/* Posts: small site label + large title + subtitle */}}
+    {{/* Content pages: small site label + large title + subtitle */}}
     {{- $title    := .Title | plainify | replaceRE `\s+` " " -}}
-    {{- $subtitle := .Params.subtitle -}}
+    {{- $subtitle := .Params.subtitle | default .Description -}}
 
     {{- $allTitleLines := partial "wordwrap.html" (dict "text" $title "max" 34) -}}
     {{- $titleLines := $allTitleLines | first 3 -}}
@@ -68,7 +69,7 @@
 
     {{/* Other pages (About, Archive, etc.): large title + subtitle */}}
     {{- $title    := .Title | plainify -}}
-    {{- $subtitle := .Params.subtitle -}}
+    {{- $subtitle := .Params.subtitle | default .Description | default .Site.Params.description -}}
 
     {{- $allTitleLines := partial "wordwrap.html" (dict "text" $title "max" 28) -}}
     {{- $titleLines := $allTitleLines | first 2 -}}
@@ -76,6 +77,8 @@
       {{- $li := sub (len $titleLines) 1 -}}
       {{- $titleLines = $titleLines | first $li | append (printf "%s..." (index $titleLines $li)) -}}
     {{- end -}}
+
+    {{- $img = $img | images.Filter (images.Text .Site.Title (dict "color" $colorAccent "size" 22 "x" 80 "y" 56 "font" $monoFont)) -}}
 
     {{- range $i, $line := $titleLines -}}
       {{- $y := add 200 (mul $i 92) -}}

@@ -1,0 +1,29 @@
+{{ define "main" }}
+{{ $tools := .RegularPages.ByDate.Reverse }}
+
+<header class="section-header">
+  <h1>{{ .Title }}</h1>
+  {{ with .Description }}
+  <p class="site-desc">{{ . }}</p>
+  {{ end }}
+</header>
+
+{{ if $tools }}
+<div class="tool-list">
+  {{ range $tools }}
+  {{ $external := .Params.externalUrl | default .Params.url }}
+  <a href="{{ if $external }}{{ $external }}{{ else }}{{ .RelPermalink }}{{ end }}" class="tool-card"{{ if $external }} target="_blank" rel="noopener noreferrer"{{ end }}>
+    <div class="tool-card-left">
+      <h2 class="tool-title">{{ .Title }}</h2>
+      {{ with .Params.subtitle }}
+      <p class="tool-desc">{{ . }}</p>
+      {{ end }}
+    </div>
+    <span class="hub-section-arrow">&rarr;</span>
+  </a>
+  {{ end }}
+</div>
+{{ else }}
+<p class="section-empty">No tools yet.</p>
+{{ end }}
+{{ end }}

@@ -1,0 +1,23 @@
+{{ define "nav-back" }}<a href="{{ "/notes/" | relURL }}" class="nav-back">&larr; Notes</a>{{ end }}
+
+{{ define "main" }}
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="{{ "/" | relURL }}">home</a>
+  <span class="breadcrumb-sep">/</span>
+  <a href="{{ "/notes/" | relURL }}">notes</a>
+  <span class="breadcrumb-sep">/</span>
+  <span class="breadcrumb-current">{{ .Title | plainify }}</span>
+</nav>
+<article class="note-article">
+  <header>
+    <div class="eyebrow">Note</div>
+    <h1>{{ .Title | safeHTML }}</h1>
+    <div class="meta">
+      <span>{{ .Date.Format "Jan 2, 2006" }}</span>
+      <span class="meta-dot">&middot;</span>
+      <span>{{ partial "read-time.html" . }}</span>
+    </div>
+  </header>
+  {{ .Content }}
+</article>
+{{ end }}

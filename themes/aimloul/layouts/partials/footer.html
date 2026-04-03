@@ -1,0 +1,12 @@
+  <footer class="site-footer">
+    <span class="footer-copy">&copy; {{ now.Year }} {{ .Site.Params.author }}</span>
+    <nav class="footer-links">
+      {{ with .Site.Params.github }}
+      <a href="{{ . }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub">{{ partial "icons.html" "github-sm" }}</a>
+      {{ end }}
+      {{ with .Site.Params.linkedin }}
+      <a href="{{ . }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">{{ partial "icons.html" "linkedin-sm" }}</a>
+      {{ end }}
+      <a href="{{ "index.xml" | absURL }}" aria-label="RSS feed">{{ partial "icons.html" "rss" }}</a>
+    </nav>
+  </footer>

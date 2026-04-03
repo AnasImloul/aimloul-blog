@@ -1,4 +1,4 @@
-{{ define "nav-back" }}<a href="{{ "/" | relURL }}?tab={{ .CurrentSection.Title | urlize }}" class="nav-back">&larr; {{ .CurrentSection.Title }}</a>{{ end }}
+{{ define "nav-back" }}<a href="{{ "/blog/" | relURL }}?tab={{ .CurrentSection.Title | urlize }}" class="nav-back">&larr; {{ .CurrentSection.Title }}</a>{{ end }}
 
 {{ define "main" }}
 {{ if .TableOfContents }}
@@ -9,9 +9,13 @@
 {{ end }}
 <nav class="breadcrumb" aria-label="Breadcrumb">
   <a href="{{ "/" | relURL }}">home</a>
-  {{ with .CurrentSection.Title }}
   <span class="breadcrumb-sep">/</span>
-  <a href="{{ "/" | relURL }}?tab={{ . | urlize }}">{{ . | lower }}</a>
+  <a href="{{ "/blog/" | relURL }}">blog</a>
+  {{ with .CurrentSection.Title }}
+  {{ if ne . "Blog" }}
+  <span class="breadcrumb-sep">/</span>
+  <a href="{{ "/blog/" | relURL }}?tab={{ . | urlize }}">{{ . | lower }}</a>
+  {{ end }}
   {{ end }}
   <span class="breadcrumb-sep">/</span>
   {{- $slug := index (last 2 (split .RelPermalink "/")) 0 -}}

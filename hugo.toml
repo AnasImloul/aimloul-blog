@@ -32,14 +32,37 @@ enableGitInfo = true
 
 [params]
   author = 'Imloul Anas'
-  description = 'Writing about database internals, systems design, and backend engineering.'
-  tagline = 'Database Internals & Software Engineering Blog'
+  description = 'Software engineer writing about database internals, systems design, and backend engineering.'
+  intro = 'Software engineer interested in database internals, distributed systems, and programming languages.'
+  tagline = 'Software Engineering & Database Internals'
   ogImage = '/og-image.png'
   ogTheme = 'light'
+  github = 'https://github.com/AnasImloul'
+  linkedin = 'https://linkedin.com/in/anas-imloul'
   giscusRepo = 'AnasImloul/aimloul-blog'
   giscusRepoId = 'R_kgDOR1LvxQ'
   giscusCategory = 'General'
   giscusCategoryId = 'DIC_kwDOR1Lvxc4C53Ls'
+
+  [[params.sections]]
+    title = 'Blog'
+    description = 'Long-form writing on databases, systems, and engineering.'
+    url = '/blog/'
+
+  [[params.sections]]
+    title = 'Projects'
+    description = 'Things I have built.'
+    url = '/projects/'
+
+  [[params.sections]]
+    title = 'Tools'
+    description = 'Interactive utilities and experiments.'
+    url = '/tools/'
+
+  [[params.sections]]
+    title = 'Notes'
+    description = 'Short-form thoughts and TILs.'
+    url = '/notes/'
 
 [markup]
   [markup.tableOfContents]
