@@ -11,9 +11,8 @@
 {{ if $tools }}
 <div class="tool-list">
   {{ range $tools }}
-  {{ $externalUrl := .Params.externalUrl }}
-  {{ $href := $externalUrl | default .Params.url | default .RelPermalink }}
-  <a href="{{ $href }}" class="tool-card"{{ if $externalUrl }} target="_blank" rel="noopener noreferrer"{{ end }}>
+  {{ $href := .Params.externalUrl | default .Params.url | default .RelPermalink }}
+  <a href="{{ $href }}" class="tool-card" target="_blank" rel="noopener noreferrer">
     <div class="tool-card-left">
       <h2 class="tool-title">{{ .Title }}</h2>
       <span class="status-badge status-active">INTERACTIVE TOOL</span>
