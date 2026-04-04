@@ -1,6 +1,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>{{ if .IsHome }}{{ .Site.Title }}{{ with .Site.Params.tagline }} — {{ . }}{{ end }}{{ else }}{{ .Title | plainify }} — {{ .Site.Title }}{{ end }}</title>
+{{- $metaTitle := .Title | plainify | replaceRE `\s+` " " | strings.TrimSpace -}}
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ with .Site.Params.tagline }} — {{ . }}{{ end }}{{ else }}{{ $metaTitle }} — {{ .Site.Title }}{{ end }}</title>
 
 {{- $desc := "" -}}
 {{- with .Params.description -}}
@@ -18,7 +19,8 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-<meta name="description" content="{{ $desc }}" />
+{{- $metaDesc := $desc | plainify | replaceRE `\s+` " " | strings.TrimSpace -}}
+<meta name="description" content="{{ $metaDesc }}" />
 <link rel="canonical" href="{{ .Permalink }}" />
 <meta name="author" content="{{ .Params.author | default .Site.Params.author }}" />
 
@@ -26,8 +28,8 @@
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
 <meta property="og:url" content="{{ .Permalink }}" />
 <meta property="og:site_name" content="{{ .Site.Title }}" />
-<meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title | plainify }}{{ end }}" />
-<meta property="og:description" content="{{ $desc }}" />
+<meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ $metaTitle }}{{ end }}" />
+<meta property="og:description" content="{{ $metaDesc }}" />
 {{ $ogImage := "" }}
 {{ $ogImage = partial "og-image.html" . | strings.TrimSpace }}
 {{ if not $ogImage }}{{ $ogImage = .Params.image | default .Site.Params.ogImage | absURL }}{{ end }}
@@ -35,7 +37,7 @@
 <meta property="og:image" content="{{ . }}" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="{{ if $.IsHome }}{{ $.Site.Title }}{{ else }}{{ $.Title | plainify }}{{ end }}" />
+<meta property="og:image:alt" content="{{ if $.IsHome }}{{ $.Site.Title }}{{ else }}{{ $metaTitle }}{{ end }}" />
 {{ end }}
 {{ if .IsPage }}
 <meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" />
@@ -46,8 +48,8 @@
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title | plainify }}{{ end }}" />
-<meta name="twitter:description" content="{{ $desc }}" />
+<meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ $metaTitle }}{{ end }}" />
+<meta name="twitter:description" content="{{ $metaDesc }}" />
 {{ with $ogImage }}<meta name="twitter:image" content="{{ . }}" />{{ end }}
 
 {{ partial "structured-data.html" . }}
