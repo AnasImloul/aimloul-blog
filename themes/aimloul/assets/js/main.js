@@ -233,4 +233,29 @@
     lb.addEventListener('click', (e) => { if (e.target === lb) closeLb(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLb(); });
   }
+  // ── Non-breaking hyphens ──
+  // Replace plain hyphens in prose text with U+2011 (non-breaking hyphen)
+  // so hyphenated words are never split across lines.
+  // Skips code, pre, script, style, links, and math elements.
+  function makeHyphensNonBreaking() {
+    const root = document.getElementById('main-content') || document.body;
+    const SKIP = new Set(['CODE', 'PRE', 'SCRIPT', 'STYLE', 'A', 'TEXTAREA', 'INPUT']);
+    const NBHY = '\u2011';
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        if (!node.textContent.includes('-')) return NodeFilter.FILTER_REJECT;
+        const blocked = node.parentElement && node.parentElement.closest(
+          'code, pre, script, style, a, textarea, input, .math, .katex'
+        );
+        return blocked ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (const node of nodes) {
+      node.textContent = node.textContent.replace(/-/g, NBHY);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', makeHyphensNonBreaking);
 })();
