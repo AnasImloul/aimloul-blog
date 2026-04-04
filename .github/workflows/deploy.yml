@@ -21,6 +21,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Read Pages project name from wrangler.toml
+        id: project
+        run: |
+          project_name=$(awk -F'"' '/^name[[:space:]]*=/ { print $2; exit }' wrangler.toml)
+          if [ -z "$project_name" ]; then
+            echo "Could not read Pages project name from wrangler.toml" >&2
+            exit 1
+          fi
+          echo "name=$project_name" >> "$GITHUB_OUTPUT"
+
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
@@ -41,7 +51,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_PROJECT_NAME: portfolio
+          CLOUDFLARE_PROJECT_NAME: ${{ steps.project.outputs.name }}
         run: |
           status_code=$(curl -sS -o /tmp/cf-pages-project.json -w "%{http_code}" \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
@@ -65,7 +75,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.80.0"
-          command: pages project create portfolio --production-branch main
+          command: pages project create ${{ steps.project.outputs.name }} --production-branch main
 
       - name: Determine deploy branch
         id: branch
@@ -83,7 +93,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4.80.0"
-          command: pages deploy public --project-name portfolio --branch ${{ steps.branch.outputs.name }} --commit-dirty=true
+          command: pages deploy public --project-name ${{ steps.project.outputs.name }} --branch ${{ steps.branch.outputs.name }} --commit-dirty=true
 
       - name: Post preview URL to PR
         if: github.event_name == 'pull_request'
