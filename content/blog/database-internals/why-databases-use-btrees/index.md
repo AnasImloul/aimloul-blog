@@ -11,7 +11,7 @@ math: true
 
 It is a question every developer eventually asks, usually late at night, staring at a query plan they don't fully understand.
 
-You've just added an index to a table with 200 million rows. The query that took 8 seconds now returns in 3 milliseconds. You know *that* it works. But you've never been forced to reckon with *why*.
+You've just added an index to a table with 200 million rows. The query that took 8 seconds now returns in 3 milliseconds. You know *that* it works. But you've never been forced to ask *why*.
 
 The honest answer goes deeper than most tutorials will take you. It begins not with code, but with physics: with the brutal, unavoidable gap between how fast your CPU thinks and how slowly your disk responds. And it ends with a single data structure, invented in 1970, that has proven so perfectly matched to the laws of hardware that no competitor has displaced it in over fifty years.
 
@@ -56,7 +56,7 @@ The number of children a single tree node can point to. A node with high fan-out
 With fan-out defined, the failures of the alternatives become precise rather than vague.
 
 {{< definition icon="BST" term="Binary Search Tree (BST)" >}}
-The classic recursive structure taught in every algorithms course. Each node holds one key and two child pointers. Searching is O(log₂ n), which sounds efficient until you confront disk I/O.
+The classic recursive structure taught in every algorithms course. Each node holds one key and two child pointers. Searching is $O(\log_2 n)$, which sounds efficient until you confront disk I/O.
 {{< /definition >}}
 
 In a naively stored BST, each node is likely to occupy a different page. Finding any single row on 1 billion rows could therefore require **30 separate page reads**. On an HDD at 10 ms per seek, that is **300 milliseconds per lookup**. No database engineer would accept this.
@@ -64,7 +64,7 @@ In a naively stored BST, each node is likely to occupy a different page. Finding
 The root problem is fan-out: a BST has a fan-out of exactly 2. This forces the tree tall and thin, maximizing the number of page reads required per traversal. The B-tree's entire design is a direct assault on this number.
 
 {{< definition icon="HM" term="Hash Map" >}}
-Provides O(1) average-case lookup by mapping keys through a hash function to a bucket. Extremely fast for exact-match queries, but fundamentally incompatible with how databases are actually queried.
+Provides $O(1)$ average-case lookup by mapping keys through a hash function to a bucket. Extremely fast for exact-match queries, but fundamentally incompatible with how databases are actually queried.
 {{< /definition >}}
 
 Hash maps fail databases for three structural reasons. First, they provide **no ordering**. A hash map cannot answer `WHERE price BETWEEN 10 AND 50` without scanning every bucket. Second, when the map grows beyond its allocated space, **resizing** requires rehashing and physically rewriting enormous amounts of data, a catastrophic I/O event. Third, they cannot support **prefix queries** like `LIKE 'abc%'` because the hash of `'abc'` has no relationship to the hash of `'abcd'`.
@@ -89,7 +89,7 @@ The contrast becomes stark when you lay the structures side by side:
       <td>Search complexity</td>
       <td><span class="tag bad">O(log₂ n)</span></td>
       <td><span class="tag good">O(1) avg</span></td>
-      <td><span class="tag good">O(log_f n)</span></td>
+      <td><span class="tag good">O(log n)</span></td>
     </tr>
     <tr>
       <td>Range queries</td>
@@ -128,7 +128,7 @@ Rudolf Bayer and Edward McCreight invented the B-tree in 1970 at Boeing Research
 
 The way it achieves this is by dramatically increasing fan-out. A BST node holds one key and two child pointers. A B-tree node, sized to fit a database page (8-16 KB), can hold hundreds or thousands of keys, giving it a fan-out in the hundreds or thousands. This is the single property that makes everything else work.
 
-The structure of a B-tree node is straightforward. Each internal node stores up to *m - 1* **routing keys** (values used to decide which child pointer to follow) and up to *m* **child pointers**. Leaf nodes store the actual data pointers (or the rows themselves, in a clustered index). The tree remains balanced at all times: every path from root to leaf is the same length.
+The structure of a B-tree node is straightforward. Each internal node stores up to *m - 1* **routing keys** (where *m* is the node's maximum number of children, called its **order**) and up to *m* **child pointers**. Leaf nodes store the actual data pointers (or the rows themselves, in a clustered index). The tree remains balanced at all times: every path from root to leaf is the same length.
 
 The mathematical consequence of high fan-out is dramatic:
 
@@ -189,7 +189,7 @@ Now that we understand the tree's shape, it's worth asking what exactly lives in
 Not all B-tree indexes are equal. The distinction between **clustered** and **secondary** indexes is one of the most consequential architectural differences in relational databases, and it is still confused by many developers.
 
 {{< definition icon="CI" term="Clustered Index" >}}
-An index in which the leaf nodes of the B-tree *contain the full row data* (not a pointer to the row, but the actual columns). The physical order of rows on disk matches the index order. In InnoDB, every table has exactly one clustered index (the primary key). PostgreSQL uses the term "heap table" for its default storage and provides `CLUSTER` to reorder on demand.
+An index in which the leaf nodes of the B-tree *contain the full row data* (not a pointer to the row, but the actual columns). The physical order of rows on disk matches the index order. In InnoDB, every table has exactly one clustered index (the primary key). PostgreSQL stores rows in an unordered structure called a **heap** (rows land wherever there is free space, with no guaranteed disk ordering), and provides the `CLUSTER` command to reorder a table by a chosen index on demand.
 {{< /definition >}}
 
 {{< definition icon="SI" term="Secondary Index" >}}
@@ -222,7 +222,9 @@ SELECT email, name, role FROM users WHERE email = 'alice@example.com';
 
 Understanding how a B-tree responds to writes clarifies both its performance characteristics and its operational costs.
 
-**Insertion** follows a straightforward path: descend to the correct leaf, write the key. When a leaf is full, it **splits**: the median key is promoted up to the parent, the node divides into two, and both are written. If the parent is also full, it splits too, and the cascade propagates upward, potentially all the way to the root. When the root splits, a new root is created and the tree grows one level taller. In practice, this is rare: production trees have enough fan-out that root splits are infrequent.
+**Insertion** follows a straightforward path: descend to the correct leaf, write the key. If the leaf has room, the operation is done.
+
+When a leaf is full, it **splits**: the median key is promoted up to the parent, the node divides into two, and both are written. If the parent is also full, it splits too, and the cascade propagates upward, potentially all the way to the root. When the root splits, a new root is created and the tree grows one level taller. In practice, this is rare: production trees have enough fan-out that root splits are infrequent.
 
 **Deletion** is more nuanced. The mathematically correct behavior (merging under-full nodes after deletion) is often **deliberately deferred** or approximated in production engines. This is because merge-on-delete creates oscillation: a table near a merge threshold that alternates between inserts and deletes would trigger constant page merges and splits. Most engines instead allow pages to fall slightly below their theoretical minimum occupancy, accepting mild storage inefficiency in exchange for write stability.
 
@@ -230,37 +232,9 @@ Understanding how a B-tree responds to writes clarifies both its performance cha
 Every page split generates multiple Write-Ahead Log (WAL) entries. The WAL is the journal your database uses to make writes crash-safe: changes are recorded there first, before the actual data pages are modified. A split touches at least three pages (the original node, the new sibling, and the parent), so each split produces at least three WAL records. This is normal and expected. But it is also why extremely write-heavy workloads on narrow integer keys (like auto-increment IDs) are B-tree-friendly: new rows always append to the rightmost leaf, triggering far fewer splits than random UUID inserts, which scatter writes across the entire tree and cause constant splitting.
 {{< /callout >}}
 
-**The UUID problem deserves a dedicated note.** When you use random UUIDs as primary keys, each new insert lands at a random position in the key space, forcing the engine to load a different leaf page from disk for nearly every write. This also means pages are constantly being split rather than filled sequentially. The practical consequence: UUID primary keys can measurably degrade write throughput on large InnoDB tables compared to sequential integer keys. Teams that need globally unique identifiers but care about write performance often reach for **UUIDv7** (which is time-ordered and therefore sequential) or a surrogate integer key instead.
+**The UUID problem deserves a dedicated note.** When you use random UUIDs as primary keys, each new insert lands at a random position in the key space, forcing the engine to load a different leaf page from disk for nearly every write. This also means pages are constantly being split rather than filled sequentially. The practical consequence: UUID primary keys can measurably degrade write throughput on large InnoDB tables compared to sequential integer keys. Teams that need globally unique identifiers but care about write performance often reach for **UUIDv7** (which embeds a timestamp prefix, making new IDs sort chronologically and therefore append to the rightmost leaf rather than scattering across the tree) or a surrogate integer key instead.
 
 **Page splits also have a longer-term consequence for reads.** Over time, after many splits, the logical ordering of leaf pages in the linked list may no longer match their physical ordering on disk. What was designed to be sequential I/O for a range scan can degrade into random I/O as the physical layout diverges from the logical one. This fragmentation is real and accumulates silently. It is precisely why database maintenance operations like PostgreSQL's `VACUUM`, MySQL's `OPTIMIZE TABLE`, and manual index rebuilds exist: they restore physical page order, turning degraded random I/O back into the sequential I/O the B-tree was designed to produce.
-
----
-
-{{< section-label >}}Where B-Trees Stop{{< /section-label >}}
-
-## The One Problem B-Trees Cannot Solve
-
-For all their dominance, B-trees are not universal. There is one class of workload where they degrade gracefully but fundamentally: **high-dimensional similarity search**.
-
-A B-tree's sorting guarantee is one-dimensional. A key either comes before or after another key. But when you're searching for "the 10 vectors most similar to this embedding" across a 1,536-dimensional space (the default for many modern embedding models), there is no meaningful linear ordering. No matter how you project the data into a B-tree, the result is a structure where "nearby" vectors in high-dimensional space are scattered randomly across the tree's leaves.
-
-{{< callout title="The curse of dimensionality" type="error" >}}
-Think of it this way: imagine trying to alphabetically sort people by "personality." The sorting key simply doesn't capture proximity in the space that matters. In 1,536 dimensions, two vectors that are semantically close (say, embeddings for "cat" and "kitten") may be nowhere near each other when their values are projected onto a single number line. A query for similar vectors would therefore need to explore an exponentially growing fraction of the tree, eliminating the logarithmic advantage entirely. For this reason, vector databases use fundamentally different structures: HNSW graphs, IVF indexes, or product quantization, all of which navigate high-dimensional space probabilistically rather than with binary comparisons.
-{{< /callout >}}
-
-This is not a failure of the B-tree. It is a boundary condition. B-trees were designed for ordered, one-dimensional keys. For everything from integer IDs to timestamps to UUIDs to composite keys, they remain unmatched. For semantic similarity in embedding space, a different tool is required.
-
----
-
-{{< section-label >}}Does NVMe Change This?{{< /section-label >}}
-
-## The B-Tree in the Age of Fast Storage
-
-A reasonable question: if NVMe SSDs are fast enough to make random I/O nearly cheap, does the B-tree's page-minimization advantage shrink to irrelevance?
-
-The answer is no, and the most important reason is the **buffer pool**: the database's page cache in RAM. PostgreSQL calls this `shared_buffers`; InnoDB calls it the buffer pool. Because the B-tree's structure guarantees that upper-level pages are accessed on *every* query, those pages are almost never read from disk at all. They simply live in RAM permanently once warmed up. Leaf pages, accessed less often, are evicted and loaded as needed.
-
-This tiered access pattern is not accidental. It is a direct consequence of the B-tree's logarithmic structure, and it is one reason the B-tree's performance model remains predictable even as underlying storage gets faster. A well-sized buffer pool on a busy OLTP system will have the top two or three levels of every major index perpetually cached, meaning most queries pay for only one or two actual disk reads: the final descent into the leaf. This is why database servers are often given as much RAM as possible.
 
 ---
 
@@ -270,11 +244,11 @@ This tiered access pattern is not accidental. It is a direct consequence of the 
 
 The B-tree's geometry has direct, practical consequences for query performance, consequences you can exploit once you understand the structure. And you can observe these consequences directly in your database's query planner output.
 
-When PostgreSQL or MySQL evaluates a query, it chooses between execution strategies like `Seq Scan` (read every page in the table), `Index Scan` (descend the B-tree, fetch full rows), and `Index Only Scan` (descend the B-tree, return data directly from leaf nodes without touching the heap). These aren't arbitrary labels: they map exactly to the B-tree operations described above. An `Index Only Scan` is the planner telling you a covering index is being used. An `Index Scan` means a double lookup is happening. A `Seq Scan` on a table with a relevant index often means the query touches enough rows that the planner judges a full table scan cheaper than thousands of individual B-tree descents.
+When PostgreSQL or MySQL evaluates a query, it chooses between execution strategies like `Seq Scan` (read every page in the table; MySQL: `type: ALL`), `Index Scan` (descend the B-tree, fetch full rows; MySQL: `type: ref`), and `Index Only Scan` (return data directly from leaf nodes without touching the heap; MySQL: `Using index`). These aren't arbitrary labels: they map exactly to the B-tree operations described above. An `Index Only Scan` is the planner telling you a covering index is being used. An `Index Scan` means a double lookup is happening. A `Seq Scan` on a table with a relevant index often means the query touches enough rows that the planner judges a full table scan cheaper than thousands of individual B-tree descents.
 
 Understanding the tree makes these plan choices legible rather than mysterious.
 
-**Range queries are cheap because of sorted leaf ordering.** A query like `WHERE created_at BETWEEN '2025-01-01' AND '2025-01-31'` descends the tree in O(log n) to find the starting leaf, then follows the linked list forward until the range is exhausted. The I/O is sequential, which is the best-case access pattern for any storage medium.
+**Range queries are cheap because of sorted leaf ordering.** A query like `WHERE created_at BETWEEN '2025-01-01' AND '2025-01-31'` descends the tree in $O(\log n)$ to find the starting leaf, then follows the linked list forward until the range is exhausted. The I/O is sequential, which is the best-case access pattern for any storage medium.
 
 {{< codeblock label="Range scan - O(log n) + sequential I/O" labeltype="good" lang="sql" complexity="✓ B-tree descent to the start of the range, then sequential leaf traversal. Cost is proportional to the range size, not the table size." complexitytype="good" >}}
 SELECT *

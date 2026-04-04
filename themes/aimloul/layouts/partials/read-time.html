@@ -1,5 +1,12 @@
 {{- with .Params.readTime -}}
   {{- . -}}
 {{- else -}}
-  {{- div (add .WordCount 237) 238 }} min read
+  {{- $content := .Content -}}
+  {{- $content = replaceRE `(?s)<pre[^>]*>.*?</pre>` "" $content -}}
+  {{- $content = replaceRE `(?s)<table[^>]*>.*?</table>` "" $content -}}
+  {{- $content = replaceRE `(?s)<figure[^>]*>.*?</figure>` "" $content -}}
+  {{- $content = replaceRE `(?s)<svg[^>]*>.*?</svg>` "" $content -}}
+  {{- $content = replaceRE `(?s)<div class="code-block">.*?</div>\s*</div>` "" $content -}}
+  {{- $words := countwords ($content | plainify) -}}
+  {{- div (add $words 119) 238 }} min read
 {{- end -}}

@@ -446,6 +446,22 @@ article p strong {
   font-weight: 500;
 }
 
+article a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  text-underline-offset: 0.14em;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+article a:visited {
+  color: color-mix(in srgb, var(--accent) 72%, var(--accent2));
+}
+article a:hover,
+article a:focus-visible {
+  color: var(--text);
+  text-decoration-color: var(--accent);
+}
+
 article ul,
 article ol {
   margin: 0 0 1.6em 1.4em;
