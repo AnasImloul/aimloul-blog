@@ -104,7 +104,7 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "name=${{ github.head_ref }}" >> "$GITHUB_OUTPUT"
           else
-            echo "name=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+            echo "name=main" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Deploy to Cloudflare Pages
