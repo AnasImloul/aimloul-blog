@@ -159,7 +159,7 @@ jobs:
           else
             deploy_env=prod
           fi
-          gh api repos/AnasImloul/cloudflare-infra/dispatches \
+          gh api repos/imloul-com/cloudflare-infra/dispatches \
             -f event_type=app-deployed \
             -f "client_payload[app]=${{ github.repository }}" \
             -f "client_payload[environment]=$deploy_env"
