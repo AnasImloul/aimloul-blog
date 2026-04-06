@@ -89,6 +89,7 @@
 </section>
 {{ end }}
 
+{{ if and .Site.Params.enableComments .Site.Params.giscusRepo }}
 {{ with .Site.Params.giscusRepo }}
 <div class="giscus-wrap">
   <button class="giscus-toggle" id="giscus-toggle" aria-expanded="true" aria-controls="giscus-container">
@@ -104,6 +105,7 @@
     data-theme-light="{{ $.Site.BaseURL }}giscus-light.css">
   </div>
 </div>
+{{ end }}
 {{ end }}
 
 <button id="back-to-top" aria-label="Back to top">
