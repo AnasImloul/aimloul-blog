@@ -39,6 +39,7 @@ enableGitInfo = true
   ogTheme = 'light'
   github = 'https://github.com/AnasImloul'
   linkedin = 'https://linkedin.com/in/anas-imloul'
+  enableComments = false
   giscusRepo = 'imloul-com/aimloul-blog'
   giscusRepoId = 'R_kgDOR1LvxQ'
   giscusCategory = 'General'
